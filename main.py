@@ -26,7 +26,10 @@ for ticker in tickers:
     data = yf.download(ticker, start=start_date, end=end_date)
     adjClose_data[ticker] = data['Adj Close']
 
-# Utilising Pandas to display more columns
-pd.set_option('display.max_columns', None)
+# Utilising Pandas to display all rows to show all stocks
+pd.set_option('display.max_rows', None)
 
-print(adjClose_data)
+# Transposing the data to get the right number of rows and columns for the assessment requirements
+transposed_adjClose_data = adjClose_data.T
+
+print(transposed_adjClose_data)
