@@ -1,6 +1,8 @@
 import yfinance as yf
 from datetime import datetime, timedelta
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 
 # Nasdaq 100 companies stored in a list below called tickers
 tickers = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'AVGO', 'GOOGL', 'GOOG', 'TSLA', 'ADBE', 'COST', 'PEP', 'NFLX', 'AMD'
@@ -8,7 +10,7 @@ tickers = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'AVGO', 'GOOGL', 'GOOG', 'TSL
            'MDLZ', 'LRCX', 'ADP', 'GILD', 'ADI', 'VRTX', 'REGN', 'MU', 'SNPS', 'PANW', 'PDD', 'MELI', 'KLAC', 'CDNS',
            'CSX', 'MAR', 'PYPL', 'CHTR', 'ASML', 'ORLY', 'MNST', 'CTAS', 'ABNB', 'LULU', 'NXPI', 'WDAY', 'CPRT', 'MRVL',
            'PCAR', 'CRWD', 'KDP', 'MCHP', 'ROST', 'ODFL', 'DXCM', 'ADSK', 'KHC', 'PAYX', 'FTNT', 'AEP', 'SGEN', 'CEG',
-           'IDXX', 'EXC', 'AZN', 'EA', 'CTSH', 'FAST', 'VRSK', 'CSGP', 'BKR', 'DDOG', 'BIIB', 'GEHC', 'XEL', 'GFS',
+           'IDXX', 'EXC', 'AZN', 'EA', 'CTSH', 'FAST', 'VRSK', 'CSGP', 'BKR', 'DDOG', 'BIIB', 'XEL', 'GFS',
            'TTD', 'ON', 'MRNA', 'ZS', 'TEAM', 'FANG', 'WBD', 'ANSS', 'DLTR', 'EBAY', 'SIRI', 'WBA', 'ALGN', 'ZM', 'ILMN'
            , 'ENPH', 'JD', 'LCID']
 
@@ -32,4 +34,13 @@ pd.set_option('display.max_rows', None)
 # Transposing the data to get the right number of rows and columns for the assessment requirements
 transposed_adjClose_data = adjClose_data.T
 
-print(transposed_adjClose_data)
+print(f"Before PCA reduction the shape of the data frame is{transposed_adjClose_data.shape}")
+
+scaler = StandardScaler()
+scaled_data = scaler.fit_transform(transposed_adjClose_data)
+
+pca = PCA(n_components=10)
+pca_reduced_data = pca.fit_transform(scaled_data)
+
+explained_variance = pca.explained_variance_ratio_
+print(f"After PCA reduction the shape of the data frame is{pca_reduced_data.shape}")
