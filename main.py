@@ -44,3 +44,10 @@ pca_reduced_data = pca.fit_transform(scaled_data)
 
 explained_variance = pca.explained_variance_ratio_
 print(f"After PCA reduction the shape of the data frame is{pca_reduced_data.shape}")
+print("_____________________________________________________________________")
+pca_reduced_data_dataFrame = pd.DataFrame(data=pca_reduced_data, columns=[f"PC{i}" for i in range(1, pca_reduced_data.shape[1] + 1)])
+pca_reduced_data_dataFrame["Tickers"] = tickers
+print(pca_reduced_data_dataFrame)
+
+csvfilepath = r'C:\Users\Danny\Documents\Uni Solent Work\Year 3\COM624 Machine Learning\COM624 Assessment\pca_reduced_data.csv'
+pca_reduced_data_dataFrame.to_csv(csvfilepath, index=False)
