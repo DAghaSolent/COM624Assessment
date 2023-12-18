@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+from sklearn.cluster import KMeans
 
 # Nasdaq 100 companies stored in a list below called tickers
 tickers = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'AVGO', 'GOOGL', 'GOOG', 'TSLA', 'ADBE', 'COST', 'PEP', 'NFLX', 'AMD'
@@ -44,10 +45,27 @@ pca_reduced_data = pca.fit_transform(scaled_data)
 
 explained_variance = pca.explained_variance_ratio_
 print(f"After PCA reduction the shape of the data frame is{pca_reduced_data.shape}")
-print("_____________________________________________________________________")
+print("_______________________________________________________________________________________________________________")
 pca_reduced_data_dataFrame = pd.DataFrame(data=pca_reduced_data, columns=[f"PC{i}" for i in range(1, pca_reduced_data.shape[1] + 1)])
 pca_reduced_data_dataFrame["Tickers"] = tickers
-print(pca_reduced_data_dataFrame)
+print(pca_reduced_data_dataFrame.head())
+print("_______________________________________________________________________________________________________________")
 
 csvfilepath = r'C:\Users\Danny\Documents\Uni Solent Work\Year 3\COM624 Machine Learning\COM624 Assessment\pca_reduced_data.csv'
 pca_reduced_data_dataFrame.to_csv(csvfilepath, index=False)
+
+# Data preprocessing to only use the 10 PCA reduced columns and ignore the ticker names
+pca_reduced_data_numeric_values = pca_reduced_data_dataFrame.iloc[:, 0:10]
+
+# Kmeans Clustering the stocks into 4 clusters
+kmeans = KMeans(n_clusters=4, init='k-means++', random_state=42)
+cluster_labels = kmeans.fit_predict(pca_reduced_data_numeric_values)
+
+# Creating a new dataframe to visualise which tickers represent in which cluster
+kmeans_clustering_results_df = pd.DataFrame({'Ticker': tickers, 'Assigned Cluster': cluster_labels})
+
+# Exporting the tickers and their Assigned Cluster label to better visualise the clusters and which ticker is assigned
+# to which cluster.
+print(kmeans_clustering_results_df)
+cluster_csvfilepath = r'C:\Users\Danny\Documents\Uni Solent Work\Year 3\COM624 Machine Learning\COM624 Assessment\kmeans_clustering_results.csv'
+kmeans_clustering_results_df.to_csv(cluster_csvfilepath, index=False)
