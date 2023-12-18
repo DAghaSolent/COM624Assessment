@@ -16,7 +16,7 @@ tickers = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'AVGO', 'GOOGL', 'GOOG', 'TSL
            , 'ENPH', 'JD', 'LCID']
 
 # Creating variables to be used to set dates to download data within a 1-year timeframe.
-end_date = datetime(2023, 12, 17) # Hardcoding the date as I am getting null errors from a specific stock after 18th Dec
+end_date = datetime(2023, 12, 17) # Hardcoding the date as I am getting null errors from a specific stock after 17th Dec
 start_date = end_date - timedelta(365)
 
 # Empty dataframe which will be used to store the Adjusted close values for each Nasdaq 100 company that is stored in
@@ -69,3 +69,33 @@ kmeans_clustering_results_df = pd.DataFrame({'Ticker': tickers, 'Assigned Cluste
 print(kmeans_clustering_results_df)
 cluster_csvfilepath = r'C:\Users\Danny\Documents\Uni Solent Work\Year 3\COM624 Machine Learning\COM624 Assessment\kmeans_clustering_results.csv'
 kmeans_clustering_results_df.to_csv(cluster_csvfilepath, index=False)
+
+print("_______________________________________________________________________________________________________________")
+
+# Empty dataframe to store the Adjusted Close values for my selected stocks.
+# My selected stocks are [NVDA, AMD, BKNG, ORLY]
+selected_stocks = pd.DataFrame()
+
+for ticker in tickers:
+    if ticker in ('NVDA', 'AMD', 'BKNG', 'ORLY'):
+        selected_stock_data = yf.download(ticker, start=start_date, end=end_date)
+        selected_stocks[ticker] = selected_stock_data['Adj Close']
+
+# Obtain the correlation matrix info for my selected stocks [NVDA, AMD, BKNG, ORLY].
+selected_stocks_correlated = selected_stocks.corr()
+
+# Obtain the correlation matrix info for the whole dataset stocks to compare and correlate against my selected stocks
+adjClose_data_correlated = adjClose_data.corr()
+
+# Looping through each stock from my selected stocks and displaying the stock and their top 10 positive/negative
+# correlations from the entire dataset.
+for stock in selected_stocks:
+    print(f"Top 10 Positive Correlations with {stock}:")
+    top10_positive_correlations_with_stock = adjClose_data_correlated[stock].sort_values(ascending=False).head(11)[1:]
+    print(top10_positive_correlations_with_stock)
+    print("___________________________________________________________________________________________________________")
+
+    print(f"Top 10 Negative Correlations with {stock}:")
+    top10_negative_correlations_with_stock = adjClose_data_correlated[stock].sort_values().head(10)
+    print(top10_negative_correlations_with_stock)
+    print("___________________________________________________________________________________________________________")
