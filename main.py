@@ -4,6 +4,8 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Nasdaq 100 companies stored in a list below called tickers
 tickers = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'AVGO', 'GOOGL', 'GOOG', 'TSLA', 'ADBE', 'COST', 'PEP', 'NFLX', 'AMD'
@@ -16,7 +18,7 @@ tickers = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'AVGO', 'GOOGL', 'GOOG', 'TSL
            , 'ENPH', 'JD', 'LCID']
 
 # Creating variables to be used to set dates to download data within a 1-year timeframe.
-end_date = datetime(2023, 12, 17) # Hardcoding the date as I am getting null errors from a specific stock after 17th Dec
+end_date = datetime(2023, 12, 18) # Hardcoding the date as I am getting null errors from a specific stock after 18th Dec
 start_date = end_date - timedelta(365)
 
 # Empty dataframe which will be used to store the Adjusted close values for each Nasdaq 100 company that is stored in
@@ -81,10 +83,10 @@ for ticker in tickers:
         selected_stock_data = yf.download(ticker, start=start_date, end=end_date)
         selected_stocks[ticker] = selected_stock_data['Adj Close']
 
-# Obtain the correlation matrix info for my selected stocks [NVDA, AMD, BKNG, ORLY].
+# Obtain the correlation info for my selected stocks [NVDA, AMD, BKNG, ORLY].
 selected_stocks_correlated = selected_stocks.corr()
 
-# Obtain the correlation matrix info for the whole dataset stocks to compare and correlate against my selected stocks
+# Obtain the correlation info for the whole dataset stocks to compare and correlate against my selected stocks
 adjClose_data_correlated = adjClose_data.corr()
 
 # Looping through each stock from my selected stocks and displaying the stock and their top 10 positive/negative
@@ -99,3 +101,11 @@ for stock in selected_stocks:
     top10_negative_correlations_with_stock = adjClose_data_correlated[stock].sort_values().head(10)
     print(top10_negative_correlations_with_stock)
     print("___________________________________________________________________________________________________________")
+
+print("_______________________________________________________________________________________________________________")
+# Heatmap that I created to visualise the correlation matrix between my selected stocks [NVDA, AMD, BKNG, ORLY].
+plt.figure(figsize=(8, 6))
+print(selected_stocks_correlated)
+sns.heatmap(selected_stocks_correlated, annot=True, cmap='coolwarm')
+plt.title("Correlation Matrix Heatmap for my selected stocks")
+plt.show()
