@@ -95,6 +95,18 @@ for stock in selected_stocks:
     print(f"Top 10 Positive Correlations with {stock}:")
     top10_positive_correlations_with_stock = adjClose_data_correlated[stock].sort_values(ascending=False).head(11)[1:]
     print(top10_positive_correlations_with_stock)
+
+    # Converting the top10_positive_correlations_with_stock to a DataFrame, so that I can plot the positive correlation
+    # between my selected stocks that are positively correlated against stocks from the whole dataset.
+    top10_positive_correlations_with_stock_df = pd.DataFrame(top10_positive_correlations_with_stock, columns=[stock])
+
+    # Creating and displaying the heatmap off the positive correlations for my selected stocks against the stocks from
+    # the whole dataset.
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(top10_positive_correlations_with_stock_df, annot=True, cmap='coolwarm')
+    plt.title(f"Top 10 Positive Correlations with {stock}")
+    plt.show()
+
     print("___________________________________________________________________________________________________________")
 
     print(f"Top 10 Negative Correlations with {stock}:")
@@ -103,8 +115,9 @@ for stock in selected_stocks:
     print("___________________________________________________________________________________________________________")
 
 print("_______________________________________________________________________________________________________________")
+print("Correlation Info between my selected stocks")
 # Heatmap that I created to visualise the correlation matrix between my selected stocks [NVDA, AMD, BKNG, ORLY].
-plt.figure(figsize=(8, 6))
+plt.figure(figsize=(10, 8))
 print(selected_stocks_correlated)
 sns.heatmap(selected_stocks_correlated, annot=True, cmap='coolwarm')
 plt.title("Correlation Matrix Heatmap for my selected stocks")
