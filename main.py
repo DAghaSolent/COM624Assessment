@@ -112,6 +112,16 @@ for stock in selected_stocks:
     print(f"Top 10 Negative Correlations with {stock}:")
     top10_negative_correlations_with_stock = adjClose_data_correlated[stock].sort_values().head(10)
     print(top10_negative_correlations_with_stock)
+
+    # Converting the top10_negative_correlations_with_stock to a DataFrame, so that I can plot the negative correlation
+    # between my selected stocks that are negatively correlated against stocks from the whole dataset.
+    top10_negative_correlations_with_stock_df = pd.DataFrame(top10_negative_correlations_with_stock, columns=[stock])
+
+    # Creating and displaying the heatmap off the negative correlations for my selected stocks against the stocks from
+    # the whole dataset.
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(top10_negative_correlations_with_stock_df, annot=True, cmap='coolwarm')
+    plt.title(f"Top 10 Negative Correlations with {stock}")
     print("___________________________________________________________________________________________________________")
 
 print("_______________________________________________________________________________________________________________")
