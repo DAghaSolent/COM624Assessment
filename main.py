@@ -51,10 +51,10 @@ print("_________________________________________________________________________
 pca_reduced_data_dataFrame = pd.DataFrame(data=pca_reduced_data, columns=[f"PC{i}" for i in range(1, pca_reduced_data.shape[1] + 1)])
 pca_reduced_data_dataFrame["Tickers"] = tickers
 print(pca_reduced_data_dataFrame.head())
-print("_______________________________________________________________________________________________________________")
 
 csvfilepath = r'C:\Users\Danny\Documents\Uni Solent Work\Year 3\COM624 Machine Learning\COM624 Assessment\pca_reduced_data.csv'
 pca_reduced_data_dataFrame.to_csv(csvfilepath, index=False)
+print("_______________________________________________________________________________________________________________")
 
 # Data preprocessing to only use the 10 PCA reduced columns and ignore the ticker names
 pca_reduced_data_numeric_values = pca_reduced_data_dataFrame.iloc[:, 0:10]
@@ -131,4 +131,16 @@ plt.figure(figsize=(10, 8))
 print(selected_stocks_correlated)
 sns.heatmap(selected_stocks_correlated, annot=True, cmap='coolwarm')
 plt.title("Correlation Matrix Heatmap for my selected stocks")
+plt.show()
+
+# Creating and displaying a chart with a historical view of Adjusted Close prices for all my selected stocks.
+plt.figure(figsize=(10, 8))
+
+for stock in selected_stocks:
+    plt.plot(selected_stocks.index, selected_stocks[stock], label=stock)
+
+plt.title("Time Series Plot of Adjusted Close Prices for my selected stocks")
+plt.xlabel("Date")
+plt.ylabel("Adjusted Close Prices")
+plt.legend()
 plt.show()
