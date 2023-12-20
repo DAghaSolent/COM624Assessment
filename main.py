@@ -6,6 +6,8 @@ from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import seaborn as sns
+from prophet import Prophet
+from prophet.plot import plot_plotly
 
 # Nasdaq 100 companies stored in a list below called tickers
 tickers = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'AVGO', 'GOOGL', 'GOOG', 'TSLA', 'ADBE', 'COST', 'PEP', 'NFLX', 'AMD'
@@ -18,7 +20,7 @@ tickers = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'AVGO', 'GOOGL', 'GOOG', 'TSL
            , 'ENPH', 'JD', 'LCID']
 
 # Creating variables to be used to set dates to download data within a 1-year timeframe.
-end_date = datetime(2023, 12, 18) # Hardcoding the date as I am getting null errors from a specific stock after 18th Dec
+end_date = datetime(2023, 12, 19) # Hardcoding the date as I am getting null errors from a specific stock after 19th Dec
 start_date = end_date - timedelta(365)
 
 # Empty dataframe which will be used to store the Adjusted close values for each Nasdaq 100 company that is stored in
@@ -105,7 +107,7 @@ for stock in selected_stocks:
     plt.figure(figsize=(10, 8))
     sns.heatmap(top10_positive_correlations_with_stock_df, annot=True, cmap='coolwarm')
     plt.title(f"Top 10 Positive Correlations with {stock}")
-    plt.show()
+    # plt.show()
 
     print("___________________________________________________________________________________________________________")
 
@@ -131,7 +133,7 @@ plt.figure(figsize=(10, 8))
 print(selected_stocks_correlated)
 sns.heatmap(selected_stocks_correlated, annot=True, cmap='coolwarm')
 plt.title("Correlation Matrix Heatmap for my selected stocks")
-plt.show()
+# plt.show()
 
 # Creating and displaying a chart with a historical view of Adjusted Close prices for all my selected stocks.
 plt.figure(figsize=(10, 8))
@@ -143,4 +145,41 @@ plt.title("Time Series Plot of Adjusted Close Prices for my selected stocks")
 plt.xlabel("Date")
 plt.ylabel("Adjusted Close Prices")
 plt.legend()
-plt.show()
+# plt.show()
+
+print("_______________________________________________________________________________________________________________")
+
+# Facebook Prophet Method prediction
+
+# Resetting and clearing the data to be processed for the Facebook Prophet Method
+selected_stocks.reset_index(inplace=True)
+selected_stocks_Date = selected_stocks['Date']
+
+for stock in selected_stocks:
+    prophet = Prophet(
+        daily_seasonality=True,
+        yearly_seasonality=True,
+        weekly_seasonality=True,
+        changepoint_prior_scale=0.05,
+        seasonality_prior_scale=10.0
+    )
+
+    # Creating a new DataFrame with the required columns for Facebook Prophet Prediction
+    new_prophetDF = pd.DataFrame({'ds': selected_stocks_Date, 'y': selected_stocks[stock]})
+    prophet.fit(new_prophetDF)
+
+    # Creating a DataFrame to be used for the prediction
+    future = prophet.make_future_dataframe(periods=365)
+
+    # Passing the future DataFrame to generate a forecast prediction for my selected stocks.
+    forecast = prophet.predict(future)
+
+    # Plot the predictions that were made by Facebook Prophet Market prediction
+    fig = plot_plotly(prophet, forecast)
+    fig.update_layout(title_text=f"Facebook Prophet Prediction for {stock}")
+    fig.show()
+
+    # fig = prophet.plot(forecast, figsize=(15, 10))
+    # plt.tight_layout()
+    # plt.title(f"Facebook Prediction for {stock}")
+    # plt.show()
