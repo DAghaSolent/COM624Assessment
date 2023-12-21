@@ -8,6 +8,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from prophet import Prophet
 from prophet.plot import plot_plotly
+from sklearn.preprocessing import MinMaxScaler
+import numpy as np
+from tensorflow.keras.layers import LSTM
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Sequential
 
 # Nasdaq 100 companies stored in a list below called tickers
 tickers = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'AVGO', 'GOOGL', 'GOOG', 'TSLA', 'ADBE', 'COST', 'PEP', 'NFLX', 'AMD'
@@ -148,7 +153,6 @@ plt.legend()
 # plt.show()
 
 print("_______________________________________________________________________________________________________________")
-
 # Facebook Prophet Method prediction
 
 # Resetting and clearing the data to be processed for the Facebook Prophet Method
@@ -177,9 +181,72 @@ for stock in selected_stocks:
     # Plot the predictions that were made by Facebook Prophet Market prediction
     fig = plot_plotly(prophet, forecast)
     fig.update_layout(title_text=f"Facebook Prophet Prediction for {stock}")
-    fig.show()
+    # fig.show()
+print("_______________________________________________________________________________________________________________")
+# LSTM Model Prediction.
 
-    # fig = prophet.plot(forecast, figsize=(15, 10))
-    # plt.tight_layout()
-    # plt.title(f"Facebook Prediction for {stock}")
-    # plt.show()
+for stock in selected_stocks:
+    # Normalizing the data using MinMax Scaling
+    scaler = MinMaxScaler()
+    scaled_data = scaler.fit_transform(selected_stocks[stock].values.reshape(-1, 1))
+
+    # Splitting the test and train data of the scaled data.
+    train_size = int(len(scaled_data) * 0.8)
+    test_size = int(len(scaled_data)) - train_size
+    train_data, test_data = scaled_data[0: train_size], scaled_data[train_size:len(scaled_data), :1]
+    print(len(train_data), len(test_data))
+
+    # Function created to create the dataset for LSTM prediction
+    def create_dataset(data, time_steps):
+        X, y = [], []
+        for i in range(len(data) - time_steps):
+            X.append(data[i:(i + time_steps)])
+            y.append(data[i + time_steps])
+        return np.array(X), np.array(y)
+
+    time_steps = 10
+
+    # Using the create dataset function to create the dataset that will be used for LSTM Prediction
+    X_train, y_train = create_dataset(train_data, time_steps)
+    X_test, y_test = create_dataset(test_data, time_steps)
+    print(X_train[0], y_train[0])
+
+    # Creating the LSTM model
+    model = Sequential()
+    model.add(LSTM(units=50, activation='relu', input_shape=(time_steps, 1)))
+    model.add(Dense(units=1))
+    model.compile(optimizer='adam', loss='mse')
+
+    # Training the model
+    history = model.fit(X_train, y_train, epochs=50, batch_size=32, validation_split=0.1, verbose=1, shuffle=False)
+
+    # Visualising the training and testing process validation during training the LSTM model that I have created above.
+    plt.figure(figsize=(10, 8))
+    plt.plot(history.history['loss'], label='train')
+    plt.plot(history.history['val_loss'], label='test')
+    plt.title(f"Validation loss for Stock:{stock}")
+    plt.legend()
+    plt.show()
+
+    y_prediction = model.predict(X_test)
+
+    # Evaluation of the predicted results made by the LSTM model, the visualisation shows the historic data and then
+    # presents the future prediction made by the LSTM model for each stock. Finally plot the predicted results
+    plt.figure(figsize=(10, 8))
+    plt.plot(np.arange(0, len(y_train)), y_train, 'g', label="history")
+    plt.plot(np.arange(len(y_train), len(y_train) + len(y_test)), y_test, marker='.', label="true")
+    plt.plot(np.arange(len(y_train), len(y_train) + len(y_test)), y_prediction, 'r', label="prediction")
+    plt.ylabel('Value')
+    plt.xlabel('Time Step')
+    plt.title(f"Stock:{stock}")
+    plt.legend()
+    plt.show()
+
+    plt.figure(figsize=(10, 8))
+    plt.plot(y_test, marker='.', label="true")
+    plt.plot(y_prediction, 'r', label="prediction")
+    plt.ylabel('Value')
+    plt.xlabel('Time Step')
+    plt.title(f"Stock:{stock}")
+    plt.legend()
+    plt.show()
