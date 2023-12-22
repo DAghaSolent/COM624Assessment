@@ -13,19 +13,22 @@ import numpy as np
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import Sequential
+from pmdarima import auto_arima
+import warnings
 
 # Nasdaq 100 companies stored in a list below called tickers
 tickers = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'AVGO', 'GOOGL', 'GOOG', 'TSLA', 'ADBE', 'COST', 'PEP', 'NFLX', 'AMD'
-           , 'CSCO', 'INTC', 'TMUS', 'CMCSA', 'INTU', 'QCOM', 'AMGN', 'TXN', 'HON', 'AMAT', 'SBUX', 'ISRG', 'BKNG',
+    , 'CSCO', 'INTC', 'TMUS', 'CMCSA', 'INTU', 'QCOM', 'AMGN', 'TXN', 'HON', 'AMAT', 'SBUX', 'ISRG', 'BKNG',
            'MDLZ', 'LRCX', 'ADP', 'GILD', 'ADI', 'VRTX', 'REGN', 'MU', 'SNPS', 'PANW', 'PDD', 'MELI', 'KLAC', 'CDNS',
            'CSX', 'MAR', 'PYPL', 'CHTR', 'ASML', 'ORLY', 'MNST', 'CTAS', 'ABNB', 'LULU', 'NXPI', 'WDAY', 'CPRT', 'MRVL',
            'PCAR', 'CRWD', 'KDP', 'MCHP', 'ROST', 'ODFL', 'DXCM', 'ADSK', 'KHC', 'PAYX', 'FTNT', 'AEP', 'SGEN', 'CEG',
            'IDXX', 'EXC', 'AZN', 'EA', 'CTSH', 'FAST', 'VRSK', 'CSGP', 'BKR', 'DDOG', 'BIIB', 'XEL', 'GFS',
            'TTD', 'ON', 'MRNA', 'ZS', 'TEAM', 'FANG', 'WBD', 'ANSS', 'DLTR', 'EBAY', 'SIRI', 'WBA', 'ALGN', 'ZM', 'ILMN'
-           , 'ENPH', 'JD', 'LCID']
+    , 'ENPH', 'JD', 'LCID']
 
 # Creating variables to be used to set dates to download data within a 1-year timeframe.
-end_date = datetime(2023, 12, 19) # Hardcoding the date as I am getting null errors from a specific stock after 19th Dec
+end_date = datetime(2023, 12,
+                    19)  # Hardcoding the date as I am getting null errors from a specific stock after 19th Dec
 start_date = end_date - timedelta(365)
 
 # Empty dataframe which will be used to store the Adjusted close values for each Nasdaq 100 company that is stored in
@@ -55,7 +58,8 @@ pca_reduced_data = pca.fit_transform(scaled_data)
 explained_variance = pca.explained_variance_ratio_
 print(f"After PCA reduction the shape of the data frame is{pca_reduced_data.shape}")
 print("_______________________________________________________________________________________________________________")
-pca_reduced_data_dataFrame = pd.DataFrame(data=pca_reduced_data, columns=[f"PC{i}" for i in range(1, pca_reduced_data.shape[1] + 1)])
+pca_reduced_data_dataFrame = pd.DataFrame(data=pca_reduced_data,
+                                          columns=[f"PC{i}" for i in range(1, pca_reduced_data.shape[1] + 1)])
 pca_reduced_data_dataFrame["Tickers"] = tickers
 print(pca_reduced_data_dataFrame.head())
 
@@ -153,100 +157,113 @@ plt.legend()
 # plt.show()
 
 print("_______________________________________________________________________________________________________________")
+
+
 # Facebook Prophet Method prediction
+def fb_prophet():
+    # Resetting and clearing the data to be processed for the Facebook Prophet Method
+    selected_stocks.reset_index(inplace=True)
+    selected_stocks_Date = selected_stocks['Date']
 
-# Resetting and clearing the data to be processed for the Facebook Prophet Method
-selected_stocks.reset_index(inplace=True)
-selected_stocks_Date = selected_stocks['Date']
+    for stock in selected_stocks:
+        prophet = Prophet(
+            daily_seasonality=True,
+            yearly_seasonality=True,
+            weekly_seasonality=True,
+            changepoint_prior_scale=0.05,
+            seasonality_prior_scale=10.0
+        )
 
-for stock in selected_stocks:
-    prophet = Prophet(
-        daily_seasonality=True,
-        yearly_seasonality=True,
-        weekly_seasonality=True,
-        changepoint_prior_scale=0.05,
-        seasonality_prior_scale=10.0
-    )
+        # Creating a new DataFrame with the required columns for Facebook Prophet Prediction
+        new_prophetDF = pd.DataFrame({'ds': selected_stocks_Date, 'y': selected_stocks[stock]})
+        prophet.fit(new_prophetDF)
 
-    # Creating a new DataFrame with the required columns for Facebook Prophet Prediction
-    new_prophetDF = pd.DataFrame({'ds': selected_stocks_Date, 'y': selected_stocks[stock]})
-    prophet.fit(new_prophetDF)
+        # Creating a DataFrame to be used for the prediction
+        future = prophet.make_future_dataframe(periods=365)
 
-    # Creating a DataFrame to be used for the prediction
-    future = prophet.make_future_dataframe(periods=365)
+        # Passing the future DataFrame to generate a forecast prediction for my selected stocks.
+        forecast = prophet.predict(future)
 
-    # Passing the future DataFrame to generate a forecast prediction for my selected stocks.
-    forecast = prophet.predict(future)
+        # Plot the predictions that were made by Facebook Prophet Market prediction
+        fig = plot_plotly(prophet, forecast)
+        fig.update_layout(title_text=f"Facebook Prophet Prediction for {stock}")
+        fig.show()
+    print(
+        "_______________________________________________________________________________________________________________")
 
-    # Plot the predictions that were made by Facebook Prophet Market prediction
-    fig = plot_plotly(prophet, forecast)
-    fig.update_layout(title_text=f"Facebook Prophet Prediction for {stock}")
-    # fig.show()
-print("_______________________________________________________________________________________________________________")
+
 # LSTM Model Prediction.
+def lstm():
+    for stock in selected_stocks:
+        # Normalizing the data using MinMax Scaling
+        scaler = MinMaxScaler()
+        scaled_data = scaler.fit_transform(selected_stocks[stock].values.reshape(-1, 1))
 
-for stock in selected_stocks:
-    # Normalizing the data using MinMax Scaling
-    scaler = MinMaxScaler()
-    scaled_data = scaler.fit_transform(selected_stocks[stock].values.reshape(-1, 1))
+        # Splitting the test and train data of the scaled data.
+        train_size = int(len(scaled_data) * 0.8)
+        test_size = int(len(scaled_data)) - train_size
+        train_data, test_data = scaled_data[0: train_size], scaled_data[train_size:len(scaled_data), :1]
+        print(len(train_data), len(test_data))
 
-    # Splitting the test and train data of the scaled data.
-    train_size = int(len(scaled_data) * 0.8)
-    test_size = int(len(scaled_data)) - train_size
-    train_data, test_data = scaled_data[0: train_size], scaled_data[train_size:len(scaled_data), :1]
-    print(len(train_data), len(test_data))
+        # Function created to create the dataset for LSTM prediction
+        def create_dataset(data, time_steps):
+            X, y = [], []
+            for i in range(len(data) - time_steps):
+                X.append(data[i:(i + time_steps)])
+                y.append(data[i + time_steps])
+            return np.array(X), np.array(y)
 
-    # Function created to create the dataset for LSTM prediction
-    def create_dataset(data, time_steps):
-        X, y = [], []
-        for i in range(len(data) - time_steps):
-            X.append(data[i:(i + time_steps)])
-            y.append(data[i + time_steps])
-        return np.array(X), np.array(y)
+        time_steps = 10
 
-    time_steps = 10
+        # Using the create dataset function to create the dataset that will be used for LSTM Prediction
+        X_train, y_train = create_dataset(train_data, time_steps)
+        X_test, y_test = create_dataset(test_data, time_steps)
+        print(X_train[0], y_train[0])
 
-    # Using the create dataset function to create the dataset that will be used for LSTM Prediction
-    X_train, y_train = create_dataset(train_data, time_steps)
-    X_test, y_test = create_dataset(test_data, time_steps)
-    print(X_train[0], y_train[0])
+        # Creating the LSTM model
+        model = Sequential()
+        model.add(LSTM(units=50, activation='relu', input_shape=(time_steps, 1)))
+        model.add(Dense(units=1))
+        model.compile(optimizer='adam', loss='mse')
 
-    # Creating the LSTM model
-    model = Sequential()
-    model.add(LSTM(units=50, activation='relu', input_shape=(time_steps, 1)))
-    model.add(Dense(units=1))
-    model.compile(optimizer='adam', loss='mse')
+        # Training the model
+        history = model.fit(X_train, y_train, epochs=50, batch_size=32, validation_split=0.1, verbose=1, shuffle=False)
 
-    # Training the model
-    history = model.fit(X_train, y_train, epochs=50, batch_size=32, validation_split=0.1, verbose=1, shuffle=False)
+        # Visualising the training and testing process validation during training the LSTM model that I have created above.
+        plt.figure(figsize=(10, 8))
+        plt.plot(history.history['loss'], label='train')
+        plt.plot(history.history['val_loss'], label='test')
+        plt.title(f"Validation loss for Stock:{stock}")
+        plt.legend()
+        plt.show()
 
-    # Visualising the training and testing process validation during training the LSTM model that I have created above.
-    plt.figure(figsize=(10, 8))
-    plt.plot(history.history['loss'], label='train')
-    plt.plot(history.history['val_loss'], label='test')
-    plt.title(f"Validation loss for Stock:{stock}")
-    plt.legend()
-    plt.show()
+        y_prediction = model.predict(X_test)
 
-    y_prediction = model.predict(X_test)
+        # Evaluation of the predicted results made by the LSTM model, the visualisation shows the historic data and then
+        # presents the future prediction made by the LSTM model for each stock. Finally plot the predicted results
+        plt.figure(figsize=(10, 8))
+        plt.plot(np.arange(0, len(y_train)), y_train, 'g', label="history")
+        plt.plot(np.arange(len(y_train), len(y_train) + len(y_test)), y_test, marker='.', label="true")
+        plt.plot(np.arange(len(y_train), len(y_train) + len(y_test)), y_prediction, 'r', label="prediction")
+        plt.ylabel('Value')
+        plt.xlabel('Time Step')
+        plt.title(f"Stock:{stock}")
+        plt.legend()
+        plt.show()
 
-    # Evaluation of the predicted results made by the LSTM model, the visualisation shows the historic data and then
-    # presents the future prediction made by the LSTM model for each stock. Finally plot the predicted results
-    plt.figure(figsize=(10, 8))
-    plt.plot(np.arange(0, len(y_train)), y_train, 'g', label="history")
-    plt.plot(np.arange(len(y_train), len(y_train) + len(y_test)), y_test, marker='.', label="true")
-    plt.plot(np.arange(len(y_train), len(y_train) + len(y_test)), y_prediction, 'r', label="prediction")
-    plt.ylabel('Value')
-    plt.xlabel('Time Step')
-    plt.title(f"Stock:{stock}")
-    plt.legend()
-    plt.show()
+        plt.figure(figsize=(10, 8))
+        plt.plot(y_test, marker='.', label="true")
+        plt.plot(y_prediction, 'r', label="prediction")
+        plt.ylabel('Value')
+        plt.xlabel('Time Step')
+        plt.title(f"Stock:{stock}")
+        plt.legend()
+        plt.show()
 
-    plt.figure(figsize=(10, 8))
-    plt.plot(y_test, marker='.', label="true")
-    plt.plot(y_prediction, 'r', label="prediction")
-    plt.ylabel('Value')
-    plt.xlabel('Time Step')
-    plt.title(f"Stock:{stock}")
-    plt.legend()
-    plt.show()
+
+print("_______________________________________________________________________________________________________________")
+# ARIMA Model Prediction
+
+warnings.filterwarnings("ignore")
+
+lstm()
