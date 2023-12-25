@@ -13,22 +13,23 @@ import numpy as np
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import Sequential
-from pmdarima import auto_arima
-import warnings
+from statsmodels.tsa.arima.model import ARIMA
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_error
+import math
 
 # Nasdaq 100 companies stored in a list below called tickers
 tickers = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'AVGO', 'GOOGL', 'GOOG', 'TSLA', 'ADBE', 'COST', 'PEP', 'NFLX', 'AMD'
-    , 'CSCO', 'INTC', 'TMUS', 'CMCSA', 'INTU', 'QCOM', 'AMGN', 'TXN', 'HON', 'AMAT', 'SBUX', 'ISRG', 'BKNG',
+           , 'CSCO', 'INTC', 'TMUS', 'CMCSA', 'INTU', 'QCOM', 'AMGN', 'TXN', 'HON', 'AMAT', 'SBUX', 'ISRG', 'BKNG',
            'MDLZ', 'LRCX', 'ADP', 'GILD', 'ADI', 'VRTX', 'REGN', 'MU', 'SNPS', 'PANW', 'PDD', 'MELI', 'KLAC', 'CDNS',
            'CSX', 'MAR', 'PYPL', 'CHTR', 'ASML', 'ORLY', 'MNST', 'CTAS', 'ABNB', 'LULU', 'NXPI', 'WDAY', 'CPRT', 'MRVL',
            'PCAR', 'CRWD', 'KDP', 'MCHP', 'ROST', 'ODFL', 'DXCM', 'ADSK', 'KHC', 'PAYX', 'FTNT', 'AEP', 'SGEN', 'CEG',
            'IDXX', 'EXC', 'AZN', 'EA', 'CTSH', 'FAST', 'VRSK', 'CSGP', 'BKR', 'DDOG', 'BIIB', 'XEL', 'GFS',
            'TTD', 'ON', 'MRNA', 'ZS', 'TEAM', 'FANG', 'WBD', 'ANSS', 'DLTR', 'EBAY', 'SIRI', 'WBA', 'ALGN', 'ZM', 'ILMN'
-    , 'ENPH', 'JD', 'LCID']
+           , 'ENPH', 'JD', 'LCID']
 
 # Creating variables to be used to set dates to download data within a 1-year timeframe.
-end_date = datetime(2023, 12,
-                    19)  # Hardcoding the date as I am getting null errors from a specific stock after 19th Dec
+end_date = datetime.today() # Hardcoding the date as I am getting null errors from a specific stock after 19th Dec
 start_date = end_date - timedelta(365)
 
 # Empty dataframe which will be used to store the Adjusted close values for each Nasdaq 100 company that is stored in
@@ -58,8 +59,7 @@ pca_reduced_data = pca.fit_transform(scaled_data)
 explained_variance = pca.explained_variance_ratio_
 print(f"After PCA reduction the shape of the data frame is{pca_reduced_data.shape}")
 print("_______________________________________________________________________________________________________________")
-pca_reduced_data_dataFrame = pd.DataFrame(data=pca_reduced_data,
-                                          columns=[f"PC{i}" for i in range(1, pca_reduced_data.shape[1] + 1)])
+pca_reduced_data_dataFrame = pd.DataFrame(data=pca_reduced_data, columns=[f"PC{i}" for i in range(1, pca_reduced_data.shape[1] + 1)])
 pca_reduced_data_dataFrame["Tickers"] = tickers
 print(pca_reduced_data_dataFrame.head())
 
@@ -158,7 +158,6 @@ plt.legend()
 
 print("_______________________________________________________________________________________________________________")
 
-
 # Facebook Prophet Method prediction
 def fb_prophet():
     # Resetting and clearing the data to be processed for the Facebook Prophet Method
@@ -188,9 +187,7 @@ def fb_prophet():
         fig = plot_plotly(prophet, forecast)
         fig.update_layout(title_text=f"Facebook Prophet Prediction for {stock}")
         fig.show()
-    print(
-        "_______________________________________________________________________________________________________________")
-
+print("_______________________________________________________________________________________________________________")
 
 # LSTM Model Prediction.
 def lstm():
@@ -263,7 +260,53 @@ def lstm():
 
 print("_______________________________________________________________________________________________________________")
 # ARIMA Model Prediction
+def arima():
+    for stock in selected_stocks:
+        stock_prices = selected_stocks[stock]
 
-warnings.filterwarnings("ignore")
+        # Split the data into training data and testing data
+        train_size = int(len(stock_prices) * 0.9)
+        train_data = stock_prices[:train_size]
+        test_data = stock_prices[train_size:]
 
-lstm()
+        # Building the train and test data for the model
+        history = [x for x in train_data]
+
+        # Storing the stock prices predictions
+        predictions = list()
+
+        # Creating the Arima Model and fitting the Arima model ready for training.
+        arima_model = ARIMA(history, order=(1, 1, 0))
+        fitted_arima_model = arima_model.fit()
+        forcasted_values = fitted_arima_model.forecast()[0]
+        predictions.append(forcasted_values)
+        history.append(test_data[0])
+
+        # Rolling multiple forecasts
+        for i in range(1, len(test_data)):
+            # Prediction
+            arima_model = ARIMA(history, order=(1, 1, 0))
+            fitted_arima_model = arima_model.fit()
+            forcasted_values = fitted_arima_model.forecast()[0]
+            predictions.append(forcasted_values)
+            observations = test_data[i]
+            history.append(observations)
+
+        # Plotting the results
+        plt.figure(figsize=(12, 8))
+        plt.plot(stock_prices, color='green', label='Train Stock Price')
+        plt.plot(test_data.index, test_data, color='red', label='Real Stock Price')
+        plt.plot(test_data.index, predictions, color='blue', label='Predicted Stock Price')
+        plt.title(f'Stock Price Prediction for : {stock}')
+        plt.legend()
+        plt.show()
+
+        # Reporting Performance for the ARIMA model
+        mse = mean_squared_error(test_data, predictions)
+        print('MSE: ' + str(mse))
+        mae = mean_absolute_error(test_data, predictions)
+        print('MAE: ' + str(mae))
+        rmse = math.sqrt(mean_squared_error(test_data, predictions))
+        print('RMSE: ' + str(rmse))
+
+arima()
