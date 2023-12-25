@@ -309,4 +309,17 @@ def arima():
         rmse = math.sqrt(mean_squared_error(test_data, predictions))
         print('RMSE: ' + str(rmse))
 
-arima()
+        # Utilising my current Arima model to predict stock prices for the next 7 days
+        future_arima_model = ARIMA(stock_prices, order=(1, 1, 0))
+        fitted_future_arima_model = future_arima_model.fit()
+        next7_forecasted_values = fitted_future_arima_model.forecast(steps=7)
+
+        # Plotting the forecasted predicted prices for each stock in the next 7 days
+        plt.figure(figsize=(12, 8))
+        plt.plot(stock_prices.index, stock_prices, label='Original Prices')
+        forecast_dates = pd.date_range(start=stock_prices.index[-1], periods=8, freq='D')[1:]
+        plt.plot(forecast_dates, next7_forecasted_values, color='red', label="Forecasted Prices")
+        plt.title(f"7 Day forecasted prediction for: {stock}")
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
