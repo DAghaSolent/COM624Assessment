@@ -29,7 +29,7 @@ tickers = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'AVGO', 'GOOGL', 'GOOG', 'TSL
            , 'ENPH', 'JD', 'LCID']
 
 # Creating variables to be used to set dates to download data within a 1-year timeframe.
-end_date = datetime.today() # Hardcoding the date as I am getting null errors from a specific stock after 19th Dec
+end_date = datetime(2023, 12, 25) # Hardcoding the date as I am getting null errors from a specific stock after 25th Dec
 start_date = end_date - timedelta(365)
 
 # Empty dataframe which will be used to store the Adjusted close values for each Nasdaq 100 company that is stored in
@@ -185,7 +185,7 @@ def fb_prophet():
 
         # Plot the predictions that were made by Facebook Prophet Market prediction
         fig = plot_plotly(prophet, forecast)
-        fig.update_layout(title_text=f"Facebook Prophet Prediction for {stock}")
+        fig.update_layout(xaxis_title="Dates", yaxis_title="Stock Prices", title_text=f"Facebook Prophet Prediction for {stock}")
         fig.show()
 print("_______________________________________________________________________________________________________________")
 
@@ -323,3 +323,5 @@ def arima():
         plt.legend()
         plt.tight_layout()
         plt.show()
+
+fb_prophet()
