@@ -17,6 +17,9 @@ from statsmodels.tsa.arima.model import ARIMA
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_error
 import math
+import warnings
+
+warnings.filterwarnings("ignore")
 
 # Nasdaq 100 companies stored in a list below called tickers
 tickers = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'AVGO', 'GOOGL', 'GOOG', 'TSLA', 'ADBE', 'COST', 'PEP', 'NFLX', 'AMD'
@@ -331,6 +334,10 @@ def user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock, fu
     user_selected_stock_date = user_selected_stock.index
     user_selected_stock_prices = user_selected_stock[user_selected_stock.columns[0]]
 
+    # Fetch today's latest stock data and then adding it to the user_selected_stock DataFrame
+    latest_data = yf.download(user_selected_stock.columns[0], start=end_date, end=end_date)
+    user_selected_stock = pd.concat([user_selected_stock, latest_data['Adj Close']])
+
     prophet = Prophet(
         daily_seasonality=True,
         yearly_seasonality=True,
@@ -356,6 +363,19 @@ def user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock, fu
     fig = plot_plotly(prophet, forecast)
     fig.update_layout(xaxis_title="Dates", yaxis_title="Stock Prices", title_text=f"Facebook Prophet Prediction for {user_selected_stock.columns[0]}")
     fig.show()
+
+    # Accessing the last/latest 'Adj Close' price for the user-selected stock
+    last_stock_date_price = user_selected_stock.iloc[-1]
+    last_stock_date = user_selected_stock.index[-1]
+    print(f"Latest Stock Information for: {user_selected_stock.columns[0]}\nLatest Updated Stock Date: {last_stock_date}\n"
+          f"Latest Stock Price: {last_stock_date_price.iloc[0]}\n")
+
+    # Print the forecasted prices for the users selected stock depending on the future days that have been entered by
+    # the user with the user_selected_stock_forecast_analysis function.
+    forecast.rename(columns={'ds': 'Date', 'yhat': 'Adj Close Price'}, inplace=True)
+    print(f"Forecasting Prices for Stock({user_selected_stock.columns[0]}) for the Next {future_days} Days:")
+    print(forecast[['Date', 'Adj Close Price']].tail(future_days))
+
 def user_selected_stock_forecast_analysis():
     stock_user_selection = input("Please enter the stock you would like to analyse: ").upper()
     user_selected_stock_DF = pd.DataFrame()
