@@ -29,7 +29,7 @@ tickers = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'AVGO', 'GOOGL', 'GOOG', 'TSL
            , 'ENPH', 'JD', 'LCID']
 
 # Creating variables to be used to set dates to download data within a 1-year timeframe.
-end_date = datetime(2023, 12, 25) # Hardcoding the date as I am getting null errors from a specific stock after 25th Dec
+end_date = datetime(2023, 12, 26) # Hardcoding the date as I am getting null errors from a specific stock after 26th Dec
 start_date = end_date - timedelta(365)
 
 # Empty dataframe which will be used to store the Adjusted close values for each Nasdaq 100 company that is stored in
@@ -324,4 +324,46 @@ def arima():
         plt.tight_layout()
         plt.show()
 
-fb_prophet()
+def user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock, future_days=365):
+    # This function has been created to allow the user to select a stock within the tickers list to be able to get an
+    # analysis forecasting prediction provided by fb_prophet for their selected stock depending on the choice of time.
+
+    user_selected_stock_date = user_selected_stock.index
+    user_selected_stock_prices = user_selected_stock[user_selected_stock.columns[0]]
+
+    prophet = Prophet(
+        daily_seasonality=True,
+        yearly_seasonality=True,
+        weekly_seasonality=True,
+        changepoint_prior_scale=0.05,
+        seasonality_prior_scale=10.0
+    )
+
+    # Creating a new DataFrame with the required columns for Facebook Prophet Prediction
+    newProphetDF = pd.DataFrame({'ds': user_selected_stock_date, 'y': user_selected_stock_prices})
+    prophet.fit(newProphetDF)
+
+    # Creating a new DataFrame to be will be used for the prediction, but for this prediction we will pass the period
+    # as a variable so that we can utilise this function for forecast stock prices for the users inputted stock
+    # against different time periods which are 7, 14 and 30 days.
+    future = prophet.make_future_dataframe(periods=future_days)
+
+    # Passing the future DataFrame with the future days variable that will be passed and changed depending on the
+    # forecasting analysis on the users selected stock
+    forecast = prophet.predict(future)
+
+    print(forecast)
+def user_selected_stock_forecast_analysis():
+    stock_user_selection = input("Please enter the stock you would like to analyse: ").upper()
+    user_selected_stock_DF = pd.DataFrame()
+    if stock_user_selection in tickers:
+        user_selected_stock_data = yf.download(stock_user_selection, start=start_date, end=end_date)
+        user_selected_stock_DF[stock_user_selection] = user_selected_stock_data['Adj Close']
+        last_date = user_selected_stock_DF.index[-1]
+
+        future_days = (end_date - last_date).days + 14
+        user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=future_days)
+    else:
+        print("Unable to find Stock information for that inputted Stock Code")
+
+user_selected_stock_forecast_analysis()
