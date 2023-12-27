@@ -352,7 +352,10 @@ def user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock, fu
     # forecasting analysis on the users selected stock
     forecast = prophet.predict(future)
 
-    print(forecast)
+    # Plot the predictions that were made by Facebook Prophet Market prediction
+    fig = plot_plotly(prophet, forecast)
+    fig.update_layout(xaxis_title="Dates", yaxis_title="Stock Prices", title_text=f"Facebook Prophet Prediction for {user_selected_stock.columns[0]}")
+    fig.show()
 def user_selected_stock_forecast_analysis():
     stock_user_selection = input("Please enter the stock you would like to analyse: ").upper()
     user_selected_stock_DF = pd.DataFrame()
@@ -361,8 +364,22 @@ def user_selected_stock_forecast_analysis():
         user_selected_stock_DF[stock_user_selection] = user_selected_stock_data['Adj Close']
         last_date = user_selected_stock_DF.index[-1]
 
-        future_days = (end_date - last_date).days + 14
-        user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=future_days)
+        user_input = int(input("Stock Found\nEnter [1] for 7 day analysis\nEnter [2] for 14 day analysis\n"
+                               "Enter [3] for 30 day analysis\nPlease Enter your Selection now: "))
+        if user_input == 1:
+            print(f"Analysing and forecasting stock prices for {stock_user_selection} for the next 7 days")
+            future_days = (end_date - last_date).days + 7
+            user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=future_days)
+        elif user_input == 2:
+            print(f"Analysing and forecasting stock prices for {stock_user_selection} for the next 14 days")
+            future_days = (end_date - last_date).days + 14
+            user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=future_days)
+        elif user_input == 3:
+            print(f"Analysing and forecasting stock prices for {stock_user_selection} for the next 30 days")
+            future_days = (end_date - last_date).days + 30
+            user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=future_days)
+        else:
+            print("Invalid Input")
     else:
         print("Unable to find Stock information for that inputted Stock Code")
 
