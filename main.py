@@ -376,28 +376,38 @@ def user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock, fu
     print(f"Forecasting Prices for Stock({user_selected_stock.columns[0]}) for the Next {future_days} Days:")
     print(forecast[['Date', 'Adj Close Price']].tail(future_days))
 
+    # I am retrieving data for the different time variance depending on the future days variable which will be 7, 14, 30
+    # days. I access the data within the forecast dataframe and then offset the data depending on the time variance from
+    # the future_days variable, I then save this as a variable to be used for comparison for stock analysis.
+    future_days_stock_price = forecast.loc[forecast['Date'] == (last_stock_date + pd.DateOffset(days=future_days)), 'Adj Close Price'].iloc[0]
+
+    if last_stock_date_price.iloc[0] > future_days_stock_price:
+        print("\nI'd advise that you sell this stock or don't invest in this stock at all.\nLatest stock price for "
+              f"({user_selected_stock.columns[0]}) is: {last_stock_date_price.iloc[0]}.\nWhich is higher than the "
+              f"predicted stock price valued at: {future_days_stock_price} in {future_days} days time.")
+    elif last_stock_date_price.iloc[0] < future_days_stock_price:
+        print(f"\nI'd advise you to invest in this stock.\nLatest stock price for ({user_selected_stock.columns[0]}) "
+              f"is: {last_stock_date_price.iloc[0]}.\nWhich is lower than the predicted stock price valued at: {future_days_stock_price}"
+              f" in {future_days} days time.")
+
 def user_selected_stock_forecast_analysis():
     stock_user_selection = input("Please enter the stock you would like to analyse: ").upper()
     user_selected_stock_DF = pd.DataFrame()
     if stock_user_selection in tickers:
         user_selected_stock_data = yf.download(stock_user_selection, start=start_date, end=end_date)
         user_selected_stock_DF[stock_user_selection] = user_selected_stock_data['Adj Close']
-        last_date = user_selected_stock_DF.index[-1]
 
         user_input = int(input("Stock Found\nEnter [1] for 7 day analysis\nEnter [2] for 14 day analysis\n"
                                "Enter [3] for 30 day analysis\nPlease Enter your Selection now: "))
         if user_input == 1:
             print(f"Analysing and forecasting stock prices for {stock_user_selection} for the next 7 days")
-            future_days = (end_date - last_date).days + 7
-            user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=future_days)
+            user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=7)
         elif user_input == 2:
             print(f"Analysing and forecasting stock prices for {stock_user_selection} for the next 14 days")
-            future_days = (end_date - last_date).days + 14
-            user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=future_days)
+            user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=14)
         elif user_input == 3:
             print(f"Analysing and forecasting stock prices for {stock_user_selection} for the next 30 days")
-            future_days = (end_date - last_date).days + 30
-            user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=future_days)
+            user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=30)
         else:
             print("Invalid Input")
     else:
