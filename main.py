@@ -168,14 +168,14 @@ def top10_positive_negative_correlation():
         plt.show()
         print("___________________________________________________________________________________________________________")
 
-print("_______________________________________________________________________________________________________________")
-print("Correlation Info between my selected stocks")
-# Heatmap that I created to visualise the correlation matrix between my selected stocks [NVDA, AMD, BKNG, ORLY].
-plt.figure(figsize=(10, 8))
-print(selected_stocks_correlated)
-sns.heatmap(selected_stocks_correlated, annot=True, cmap='coolwarm')
-plt.title("Correlation Matrix Heatmap for my selected stocks")
-# plt.show()
+def correlation_matrix_between_my_selected_stocks():
+    print("Correlation Info between my selected stocks")
+    # Heatmap that I created to visualise the correlation matrix between my selected stocks [NVDA, AMD, BKNG, ORLY].
+    plt.figure(figsize=(10, 8))
+    print(selected_stocks_correlated)
+    sns.heatmap(selected_stocks_correlated, annot=True, cmap='coolwarm')
+    plt.title("Correlation Matrix Heatmap for my selected stocks")
+    plt.show()
 
 # Creating and displaying a chart with a historical view of Adjusted Close prices for all my selected stocks.
 plt.figure(figsize=(10, 8))
@@ -439,4 +439,4 @@ def user_selected_stock_forecast_analysis():
     else:
         print("Unable to find Stock information for that inputted Stock Code")
 
-top10_positive_negative_correlation()
+correlation_matrix_between_my_selected_stocks()
