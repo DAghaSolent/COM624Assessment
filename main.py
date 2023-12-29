@@ -51,42 +51,49 @@ pd.set_option('display.max_rows', None)
 # Transposing the data to get the right number of rows and columns for the assessment requirements
 transposed_adjClose_data = adjClose_data.T
 
-print(f"Before PCA reduction the shape of the data frame is{transposed_adjClose_data.shape}")
+def pca_reduction_and_kmeans_clustering(): # Task 2 PCA reduction and Clustering Task
+    # I display the shape off the dataframe before performing PCA reduction to showcase how many columns and rows are
+    # in the dataframe before PCA operation.
+    print(f"Before PCA reduction the shape of the data frame is{transposed_adjClose_data.shape}")
 
-scaler = StandardScaler()
-scaled_data = scaler.fit_transform(transposed_adjClose_data)
+    scaler = StandardScaler()
+    scaled_data = scaler.fit_transform(transposed_adjClose_data)
 
-pca = PCA(n_components=10)
-pca_reduced_data = pca.fit_transform(scaled_data)
+    # Reducing the data
+    pca = PCA(n_components=10)
+    pca_reduced_data = pca.fit_transform(scaled_data)
+    explained_variance = pca.explained_variance_ratio_
 
-explained_variance = pca.explained_variance_ratio_
-print(f"After PCA reduction the shape of the data frame is{pca_reduced_data.shape}")
-print("_______________________________________________________________________________________________________________")
-pca_reduced_data_dataFrame = pd.DataFrame(data=pca_reduced_data, columns=[f"PC{i}" for i in range(1, pca_reduced_data.shape[1] + 1)])
-pca_reduced_data_dataFrame["Tickers"] = tickers
-print(pca_reduced_data_dataFrame.head())
+    # I display the results to the terminal to confirm that PCA reduction has been successful in reducing the columns
+    # from 260 to 10 columns.
+    print(f"After PCA reduction the shape of the data frame is{pca_reduced_data.shape}")
 
-csvfilepath = r'C:\Users\Danny\Documents\Uni Solent Work\Year 3\COM624 Machine Learning\COM624 Assessment\pca_reduced_data.csv'
-pca_reduced_data_dataFrame.to_csv(csvfilepath, index=False)
-print("_______________________________________________________________________________________________________________")
+    # Adding a column called Tickers which shows the names off the stocks within the pca_reduced_data_dataFrame
+    pca_reduced_data_dataFrame = pd.DataFrame(data=pca_reduced_data, columns=[f"PC{i}" for i in range(1, pca_reduced_data.shape[1] + 1)])
+    pca_reduced_data_dataFrame["Tickers"] = tickers
 
-# Data preprocessing to only use the 10 PCA reduced columns and ignore the ticker names
-pca_reduced_data_numeric_values = pca_reduced_data_dataFrame.iloc[:, 0:10]
+    # Terminal visualization of the reduced columns done by the PCA reduction operation
+    print(pca_reduced_data_dataFrame.head())
 
-# Kmeans Clustering the stocks into 4 clusters
-kmeans = KMeans(n_clusters=4, init='k-means++', random_state=42)
-cluster_labels = kmeans.fit_predict(pca_reduced_data_numeric_values)
+    # Exporting to a CSV for better visualisation off the reduced columns done by the PCA reduction operation
+    csvfilepath = r'C:\Users\Danny\Documents\Uni Solent Work\Year 3\COM624 Machine Learning\COM624 Assessment\pca_reduced_data.csv'
+    pca_reduced_data_dataFrame.to_csv(csvfilepath, index=False)
 
-# Creating a new dataframe to visualise which tickers represent in which cluster
-kmeans_clustering_results_df = pd.DataFrame({'Ticker': tickers, 'Assigned Cluster': cluster_labels})
+    # Data preprocessing to only use the 10 PCA reduced columns and ignore the ticker names
+    pca_reduced_data_numeric_values = pca_reduced_data_dataFrame.iloc[:, 0:10]
 
-# Exporting the tickers and their Assigned Cluster label to better visualise the clusters and which ticker is assigned
-# to which cluster.
-print(kmeans_clustering_results_df)
-cluster_csvfilepath = r'C:\Users\Danny\Documents\Uni Solent Work\Year 3\COM624 Machine Learning\COM624 Assessment\kmeans_clustering_results.csv'
-kmeans_clustering_results_df.to_csv(cluster_csvfilepath, index=False)
+    # Kmeans Clustering the stocks into 4 clusters
+    kmeans = KMeans(n_clusters=4, init='k-means++', random_state=42)
+    cluster_labels = kmeans.fit_predict(pca_reduced_data_numeric_values)
 
-print("_______________________________________________________________________________________________________________")
+    # Creating a new dataframe to visualise which stock tickers represent in which cluster group number.
+    kmeans_clustering_results_df = pd.DataFrame({'Ticker': tickers, 'Assigned Cluster': cluster_labels})
+
+    # Exporting the tickers and their Assigned Cluster label to better visualise the clusters and which ticker is assigned
+    # to which cluster. Also displaying onto the console all the stocks and their cluster label association.
+    print(kmeans_clustering_results_df)
+    cluster_csvfilepath = r'C:\Users\Danny\Documents\Uni Solent Work\Year 3\COM624 Machine Learning\COM624 Assessment\kmeans_clustering_results.csv'
+    kmeans_clustering_results_df.to_csv(cluster_csvfilepath, index=False)
 
 # Empty dataframe to store the Adjusted Close values for my selected stocks.
 # My selected stocks are [NVDA, AMD, BKNG, ORLY]
@@ -160,7 +167,6 @@ plt.legend()
 # plt.show()
 
 print("_______________________________________________________________________________________________________________")
-
 # Facebook Prophet Method prediction
 def fb_prophet():
     # Resetting and clearing the data to be processed for the Facebook Prophet Method
@@ -190,7 +196,6 @@ def fb_prophet():
         fig = plot_plotly(prophet, forecast)
         fig.update_layout(xaxis_title="Dates", yaxis_title="Stock Prices", title_text=f"Facebook Prophet Prediction for {stock}")
         fig.show()
-print("_______________________________________________________________________________________________________________")
 
 # LSTM Model Prediction.
 def lstm():
@@ -260,8 +265,6 @@ def lstm():
         plt.legend()
         plt.show()
 
-
-print("_______________________________________________________________________________________________________________")
 # ARIMA Model Prediction
 def arima():
     for stock in selected_stocks:
@@ -413,4 +416,4 @@ def user_selected_stock_forecast_analysis():
     else:
         print("Unable to find Stock information for that inputted Stock Code")
 
-user_selected_stock_forecast_analysis()
+pca_reduction_and_kmeans_clustering()
