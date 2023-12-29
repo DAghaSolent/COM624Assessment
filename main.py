@@ -21,6 +21,7 @@ import warnings
 import streamlit as st
 
 warnings.filterwarnings("ignore")
+st.set_option('deprecation.showPyplotGlobalUse', False)
 
 # Nasdaq 100 companies stored in a list below called tickers
 tickers = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'AVGO', 'GOOGL', 'GOOG', 'TSLA', 'ADBE', 'COST', 'PEP', 'NFLX', 'AMD'
@@ -203,15 +204,17 @@ def top10_positive_negative_correlation():
 def correlation_matrix_between_my_selected_stocks():
     print("Correlation Info between my selected stocks")
     # Heatmap that I created to visualise the correlation matrix between my selected stocks [NVDA, AMD, BKNG, ORLY].
-    plt.figure(figsize=(10, 8))
+    plt.figure(figsize=(12, 10))
     print(selected_stocks_correlated)
     sns.heatmap(selected_stocks_correlated, annot=True, cmap='coolwarm')
     plt.title("Correlation Matrix Heatmap for my selected stocks")
-    plt.show()
+    st.subheader("Correlation Matrix Heatmap for my selected stocks")
+    st.write("Below is a heatmap that displays the correlation matrix between my selected stocks [NVDA, AMD, BKNG, ORLY].")
+    st.pyplot()
 
 def time_series_plots_for_my_selected_stocks():
     # Creating and displaying a chart with a historical view of Adjusted Close prices for all my selected stocks.
-    plt.figure(figsize=(10, 8))
+    plt.figure(figsize=(12, 10))
 
     for stock in selected_stocks:
         plt.plot(selected_stocks.index, selected_stocks[stock], label=stock)
@@ -220,7 +223,11 @@ def time_series_plots_for_my_selected_stocks():
     plt.xlabel("Date")
     plt.ylabel("Adjusted Close Prices")
     plt.legend()
-    plt.show()
+    st.subheader("Time Series Analysis of my Selected Stock")
+    st.write("Below is a Time Series Visual Analysis where I'm displaying and comparing Adjusted Close Prices for my "
+             "selected stocks in the span of one year. Within this Time Series Analysis we can see that BKNG's Adjusted"
+             " Close Prices is far higher in value than the other 3 selected stocks which are 'AMD', 'NVDA' and 'ORLY'")
+    st.pyplot()
 
 # Facebook Prophet Method prediction
 def fb_prophet():

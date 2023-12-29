@@ -5,16 +5,16 @@ def home():
 
 def pca_and_kmeans_page():
     st.title("Task 2: PCA and KMeans Clustering")
-    st.write(pca_reduction_and_kmeans_clustering())
+    pca_reduction_and_kmeans_clustering()
 
 def correlation_analysis_page():
     st.title("Correlation Analysis")
-    correlation_matrix_between_my_selected_stocks()
     top10_positive_negative_correlation()
 
-def time_series_plots_page():
-    st.title("Time Series Plots")
+def eda_visual_analysis():
+    st.title("EDA Visual Analysis")
     time_series_plots_for_my_selected_stocks()
+    correlation_matrix_between_my_selected_stocks()
 
 def stock_forecast_analysis_page():
     st.title("Stock Forecast Analysis")
@@ -22,7 +22,7 @@ def stock_forecast_analysis_page():
 
 def main():
     st.sidebar.title("Navigation")
-    pages = ["Home", "PCA and KMeans", "Correlation Analysis", "Time Series Plots", "Stock Forecast Analysis"]
+    pages = ["Home", "PCA and KMeans", "Correlation Analysis", "EDA Visual Analysis", "Stock Forecast Analysis"]
     choice = st.sidebar.selectbox("Go to", pages)
 
     if choice == "Home":
@@ -31,8 +31,8 @@ def main():
         pca_and_kmeans_page()
     elif choice == "Correlation Analysis":
         correlation_analysis_page()
-    elif choice == "Time Series Plots":
-        time_series_plots_page()
+    elif choice == "EDA Visual Analysis":
+        eda_visual_analysis()
     elif choice == "Stock Forecast Analysis":
         stock_forecast_analysis_page()
 
