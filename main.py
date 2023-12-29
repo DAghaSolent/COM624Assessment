@@ -150,7 +150,7 @@ def top10_positive_negative_correlation():
         sns.heatmap(top10_positive_correlations_with_stock_df, annot=True, cmap='coolwarm')
         plt.title(f"Top 10 Positive Correlations with {stock}")
 
-        print("___________________________________________________________________________________________________________")
+        print("_______________________________________________________________________________________________________")
 
         print(f"Top 10 Negative Correlations with {stock}:")
         top10_negative_correlations_with_stock = adjClose_data_correlated[stock].sort_values().head(10)
@@ -166,7 +166,7 @@ def top10_positive_negative_correlation():
         sns.heatmap(top10_negative_correlations_with_stock_df, annot=True, cmap='coolwarm')
         plt.title(f"Top 10 Negative Correlations with {stock}")
         plt.show()
-        print("___________________________________________________________________________________________________________")
+        print("_______________________________________________________________________________________________________")
 
 def correlation_matrix_between_my_selected_stocks():
     print("Correlation Info between my selected stocks")
@@ -177,19 +177,19 @@ def correlation_matrix_between_my_selected_stocks():
     plt.title("Correlation Matrix Heatmap for my selected stocks")
     plt.show()
 
-# Creating and displaying a chart with a historical view of Adjusted Close prices for all my selected stocks.
-plt.figure(figsize=(10, 8))
+def time_series_plots_for_my_selected_stocks():
+    # Creating and displaying a chart with a historical view of Adjusted Close prices for all my selected stocks.
+    plt.figure(figsize=(10, 8))
 
-for stock in selected_stocks:
-    plt.plot(selected_stocks.index, selected_stocks[stock], label=stock)
+    for stock in selected_stocks:
+        plt.plot(selected_stocks.index, selected_stocks[stock], label=stock)
 
-plt.title("Time Series Plot of Adjusted Close Prices for my selected stocks")
-plt.xlabel("Date")
-plt.ylabel("Adjusted Close Prices")
-plt.legend()
-# plt.show()
+    plt.title("Time Series Plot of Adjusted Close Prices for my selected stocks")
+    plt.xlabel("Date")
+    plt.ylabel("Adjusted Close Prices")
+    plt.legend()
+    plt.show()
 
-print("_______________________________________________________________________________________________________________")
 # Facebook Prophet Method prediction
 def fb_prophet():
     # Resetting and clearing the data to be processed for the Facebook Prophet Method
@@ -439,4 +439,4 @@ def user_selected_stock_forecast_analysis():
     else:
         print("Unable to find Stock information for that inputted Stock Code")
 
-correlation_matrix_between_my_selected_stocks()
+time_series_plots_for_my_selected_stocks()
