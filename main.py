@@ -18,6 +18,7 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_error
 import math
 import warnings
+import streamlit as st
 
 warnings.filterwarnings("ignore")
 
@@ -54,7 +55,13 @@ transposed_adjClose_data = adjClose_data.T
 def pca_reduction_and_kmeans_clustering(): # Task 2 PCA reduction and Clustering Task
     # I display the shape off the dataframe before performing PCA reduction to showcase how many columns and rows are
     # in the dataframe before PCA operation.
-    print(f"Before PCA reduction the shape of the data frame is{transposed_adjClose_data.shape}")
+    st.subheader("Dimensional Reduction utilising PCA")
+    st.write("I used the code snippet below to display the shape of the dataframe before performing PCA reduction "
+             "operation to showcase how many columns and rows are in the dataframe before attempting PCA reduction "
+             "operation.")
+    st.code("""f"Before PCA reduction the shape of the data frame is{transposed_adjClose_data.shape}""""")
+    st.markdown("Here is the output from the terminal running the code above: **Before PCA reduction the shape of the "
+                f"data frame is{transposed_adjClose_data.shape}**")
 
     scaler = StandardScaler()
     scaled_data = scaler.fit_transform(transposed_adjClose_data)
@@ -64,16 +71,32 @@ def pca_reduction_and_kmeans_clustering(): # Task 2 PCA reduction and Clustering
     pca_reduced_data = pca.fit_transform(scaled_data)
     explained_variance = pca.explained_variance_ratio_
 
+    st.write("I then perform PCA reduction operation with the code snippet below to reduce the columns from 250 to 10 columns.")
+    st.code("""
+    scaler = StandardScaler()
+    scaled_data = scaler.fit_transform(transposed_adjClose_data)
+    
+    pca = PCA(n_components=10)
+    pca_reduced_data = pca.fit_transform(scaled_data)
+    explained_variance = pca.explained_variance_ratio_
+    """)
     # I display the results to the terminal to confirm that PCA reduction has been successful in reducing the columns
-    # from 260 to 10 columns.
-    print(f"After PCA reduction the shape of the data frame is{pca_reduced_data.shape}")
+    # from 250 to 10 columns.
+    st.write("After PCA reduction operation, I then use the code snippet below to confirm that the pca reduction "
+             "operation was successful in reducing the number of columns from 250 to 10 columns. ")
+    st.code("""f"After PCA reduction the shape of the data frame is{pca_reduced_data.shape}""")
+    st.markdown("Here is the output from the terminal running the code above: **After PCA reduction the shape of the "
+                f"data frame is{pca_reduced_data.shape}**")
 
     # Adding a column called Tickers which shows the names off the stocks within the pca_reduced_data_dataFrame
     pca_reduced_data_dataFrame = pd.DataFrame(data=pca_reduced_data, columns=[f"PC{i}" for i in range(1, pca_reduced_data.shape[1] + 1)])
     pca_reduced_data_dataFrame["Tickers"] = tickers
 
-    # Terminal visualization of the reduced columns done by the PCA reduction operation
-    print(pca_reduced_data_dataFrame.head())
+    # Terminal visualization of the reduced columns done by the PCA reduction operation.
+    st.write("Below is a visualisation of the reduced columns within the terminal done by the PCA reduction operation."
+             " Bear in mind I am only calling the first 5 stocks within this output by calling .head() method on my pca"
+             " reduced dataframe")
+    st.write(pca_reduced_data_dataFrame.head())
 
     # Exporting to a CSV for better visualisation off the reduced columns done by the PCA reduction operation
     csvfilepath = r'C:\Users\Danny\Documents\Uni Solent Work\Year 3\COM624 Machine Learning\COM624 Assessment\pca_reduced_data.csv'
@@ -111,11 +134,20 @@ def pca_reduction_and_kmeans_clustering(): # Task 2 PCA reduction and Clustering
         elif row['Assigned Cluster'] == 3:
             cluster3.append(row['Ticker'])
 
+    st.subheader("Clustering with KMeans")
+    st.write("To group the stocks together into 4 separate groups I utilised the clustering algorithm KMeans to group"
+             " the stocks together into 4 separate cluster groups. The code snippet below is how I utilised KMeans "
+             "clustering algorithm to group the stocks into 4 separate cluster groups.")
+    st.code("""
+    kmeans = KMeans(n_clusters=4, init='k-means++', random_state=42)
+    cluster_labels = kmeans.fit_predict(pca_reduced_data_numeric_values)
+    """)
+    st.write("Below are the cluster groups and what stocks belong to which cluster group")
     # Displaying Cluster Lists
-    print(f"Cluster Group 0:\n{cluster0}")
-    print(f"Cluster Group 1:\n{cluster1}")
-    print(f"Cluster Group 2:\n{cluster2}")
-    print(f"Cluster Group 3:\n{cluster3}")
+    st.write(f"Cluster Group 0:\n{cluster0}")
+    st.write(f"Cluster Group 1:\n{cluster1}")
+    st.write(f"Cluster Group 2:\n{cluster2}")
+    st.write(f"Cluster Group 3:\n{cluster3}")
 
 # Empty dataframe to store the Adjusted Close values for my selected stocks.
 # My selected stocks are [NVDA, AMD, BKNG, ORLY]
@@ -438,5 +470,3 @@ def user_selected_stock_forecast_analysis():
             print("Invalid Input")
     else:
         print("Unable to find Stock information for that inputted Stock Code")
-
-time_series_plots_for_my_selected_stocks()
