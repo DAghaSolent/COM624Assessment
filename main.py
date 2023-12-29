@@ -90,10 +90,32 @@ def pca_reduction_and_kmeans_clustering(): # Task 2 PCA reduction and Clustering
     kmeans_clustering_results_df = pd.DataFrame({'Ticker': tickers, 'Assigned Cluster': cluster_labels})
 
     # Exporting the tickers and their Assigned Cluster label to better visualise the clusters and which ticker is assigned
-    # to which cluster. Also displaying onto the console all the stocks and their cluster label association.
-    print(kmeans_clustering_results_df)
+    # to which cluster.
     cluster_csvfilepath = r'C:\Users\Danny\Documents\Uni Solent Work\Year 3\COM624 Machine Learning\COM624 Assessment\kmeans_clustering_results.csv'
     kmeans_clustering_results_df.to_csv(cluster_csvfilepath, index=False)
+
+    # Cluster Lists for better visualisation in terminal and front end GUI solution.
+    cluster0 = []
+    cluster1 = []
+    cluster2 = []
+    cluster3 = []
+
+    # Appending to specific list depending on the Assigned Cluster Number they have been assigned by KMeans Clustering.
+    for index, row in kmeans_clustering_results_df.iterrows():
+        if row['Assigned Cluster'] == 0:
+            cluster0.append(row['Ticker'])
+        elif row['Assigned Cluster'] == 1:
+            cluster1.append(row['Ticker'])
+        elif row['Assigned Cluster'] == 2:
+            cluster2.append(row['Ticker'])
+        elif row['Assigned Cluster'] == 3:
+            cluster3.append(row['Ticker'])
+
+    # Displaying Cluster Lists
+    print(f"Cluster Group 0:\n{cluster0}")
+    print(f"Cluster Group 1:\n{cluster1}")
+    print(f"Cluster Group 2:\n{cluster2}")
+    print(f"Cluster Group 3:\n{cluster3}")
 
 # Empty dataframe to store the Adjusted Close values for my selected stocks.
 # My selected stocks are [NVDA, AMD, BKNG, ORLY]
