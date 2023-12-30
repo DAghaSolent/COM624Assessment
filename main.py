@@ -143,12 +143,14 @@ def pca_reduction_and_kmeans_clustering(): # Task 2 PCA reduction and Clustering
     kmeans = KMeans(n_clusters=4, init='k-means++', random_state=42)
     cluster_labels = kmeans.fit_predict(pca_reduced_data_numeric_values)
     """)
+
     st.write("Below are the cluster groups and what stocks belong to which cluster group")
+    tab0, tab1, tab2, tab3 = st.tabs(["Cluster Group 0", "Cluster Group 1", "Cluster Group 2", "Cluster Group 3"])
     # Displaying Cluster Lists
-    st.write(f"Cluster Group 0:\n{cluster0}")
-    st.write(f"Cluster Group 1:\n{cluster1}")
-    st.write(f"Cluster Group 2:\n{cluster2}")
-    st.write(f"Cluster Group 3:\n{cluster3}")
+    tab0.write(cluster0)
+    tab1.write(cluster1)
+    tab2.write(cluster2)
+    tab3.write(cluster3)
 
 # Empty dataframe to store the Adjusted Close values for my selected stocks.
 # My selected stocks are [NVDA, AMD, BKNG, ORLY]
