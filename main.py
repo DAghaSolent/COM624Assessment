@@ -166,10 +166,16 @@ selected_stocks_correlated = selected_stocks.corr()
 adjClose_data_correlated = adjClose_data.corr()
 
 def top10_positive_negative_correlation():
+    st.write("In this page I have displayed the top 10 positive and negative correlations for each of my selected stock"
+             " against the whole nasdaq 100 stocks in a heatmap view. At the bottom of each heatmap there is an "
+             "expander on the page click it to view the raw data of the positive/negative correlation for each of my"
+             "selected stocks.")
+
     # Looping through each stock from my selected stocks and displaying the stock and their top 10 positive/negative
     # correlations from the entire dataset.
     for stock in selected_stocks:
         print(f"Top 10 Positive Correlations with {stock}:")
+        st.subheader(f"Top 10 Positive Correlations with {stock}:")
         top10_positive_correlations_with_stock = adjClose_data_correlated[stock].sort_values(ascending=False).head(11)[1:]
         print(top10_positive_correlations_with_stock)
 
@@ -182,10 +188,13 @@ def top10_positive_negative_correlation():
         plt.figure(figsize=(10, 8))
         sns.heatmap(top10_positive_correlations_with_stock_df, annot=True, cmap='coolwarm')
         plt.title(f"Top 10 Positive Correlations with {stock}")
+        st.pyplot()
+        with st.expander(f"**Click here to see raw data of the Top 10 Positive Correlations with {stock}**"):
+            st.write(top10_positive_correlations_with_stock)
 
         print("_______________________________________________________________________________________________________")
-
         print(f"Top 10 Negative Correlations with {stock}:")
+        st.subheader(f"Top 10 Negative Correlations with {stock}:")
         top10_negative_correlations_with_stock = adjClose_data_correlated[stock].sort_values().head(10)
         print(top10_negative_correlations_with_stock)
 
@@ -197,8 +206,9 @@ def top10_positive_negative_correlation():
         # the whole dataset.
         plt.figure(figsize=(10, 8))
         sns.heatmap(top10_negative_correlations_with_stock_df, annot=True, cmap='coolwarm')
-        plt.title(f"Top 10 Negative Correlations with {stock}")
-        plt.show()
+        st.pyplot()
+        with st.expander(f"**Click here to see raw data of the Top 10 Negative Correlations with {stock}**"):
+            st.write(top10_negative_correlations_with_stock)
         print("_______________________________________________________________________________________________________")
 
 def correlation_matrix_between_my_selected_stocks():
