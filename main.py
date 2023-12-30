@@ -271,7 +271,9 @@ def fb_prophet():
         # Plot the predictions that were made by Facebook Prophet Market prediction
         fig = plot_plotly(prophet, forecast)
         fig.update_layout(xaxis_title="Dates", yaxis_title="Stock Prices", title_text=f"Facebook Prophet Prediction for {stock}")
-        fig.show()
+        st.plotly_chart(fig)
+        with st.expander(f"**Click here to see FB Prophet's Predicted Adjusted Close Prices for: {stock}**"):
+            st.write(forecast[['ds', 'yhat']].rename(columns={'ds': 'Date', 'yhat': 'Adjusted Close Prices'}))
 
 # LSTM Model Prediction.
 def lstm():
