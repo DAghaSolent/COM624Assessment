@@ -170,8 +170,10 @@ adjClose_data_correlated = adjClose_data.corr()
 def top10_positive_negative_correlation():
     st.write("In this page I have displayed the top 10 positive and negative correlations for each of my selected stock"
              " against the whole nasdaq 100 stocks in a heatmap view. At the bottom of each heatmap there is an "
-             "expander on the page click it to view the raw data of the positive/negative correlation for each of my"
+             "expander on the page click it to view the raw data of the positive/negative correlation for each of my "
              "selected stocks.")
+
+    st.write("**My Selected Stocks are [NVDA, AMD, BKNG, ORLY]**")
 
     # Looping through each stock from my selected stocks and displaying the stock and their top 10 positive/negative
     # correlations from the entire dataset.
@@ -235,7 +237,7 @@ def time_series_plots_for_my_selected_stocks():
     plt.xlabel("Date")
     plt.ylabel("Adjusted Close Prices")
     plt.legend()
-    st.subheader("Time Series Analysis of my Selected Stock")
+    st.subheader("Time Series Analysis of my selected stocks")
     st.write("Below is a Time Series Visual Analysis where I'm displaying and comparing Adjusted Close Prices for my "
              "selected stocks in the span of one year. Within this Time Series Analysis we can see that BKNG's Adjusted"
              " Close Prices is far higher in value than the other 3 selected stocks which are 'AMD', 'NVDA' and 'ORLY'")

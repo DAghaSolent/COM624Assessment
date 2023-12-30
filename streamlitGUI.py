@@ -12,9 +12,12 @@ def correlation_analysis_page():
     top10_positive_negative_correlation()
 
 def eda_visual_analysis():
-    st.title("EDA Visual Analysis")
-    time_series_plots_for_my_selected_stocks()
-    correlation_matrix_between_my_selected_stocks()
+    st.title("EDA Visual Analysis of my selected stocks")
+    eda_tab1, eda_tab2 = st.tabs(["Time Series Analysis", "Correlation Matrix Heatmap"])
+    with eda_tab1:
+        time_series_plots_for_my_selected_stocks()
+    with eda_tab2:
+        correlation_matrix_between_my_selected_stocks()
 
 def stock_forecast_analysis_page():
     st.title("Stock Forecast Analysis")
