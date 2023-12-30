@@ -249,7 +249,7 @@ def fb_prophet():
     selected_stocks.reset_index(inplace=True)
     selected_stocks_Date = selected_stocks['Date']
 
-    for stock in selected_stocks:
+    for stock in selected_stocks.iloc[:, 1:]:
         prophet = Prophet(
             daily_seasonality=True,
             yearly_seasonality=True,
