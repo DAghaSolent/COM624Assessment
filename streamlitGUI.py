@@ -31,10 +31,23 @@ def ml_models_prediction_forecasting():
              "stock.")
     st.write("Click on the tabs below to see the visual representation of the prediction and forecasting off my selected"
              " stocks utilising the machine learning models FB Prophet, LSTM, ARIMA.")
-    ml_tab1, ml_tab2, ml_tab3 = st.tabs(["FB Prophet", "LSTM", "ARIMA"])
-    with ml_tab1:
-        fb_prophet()
 
+    ml_tab1, ml_tab2, ml_tab3 = st.tabs(["LSTM", "FB Prophet", "ARIMA"])
+    with ml_tab1:
+        st.subheader("LSTM Model")
+        run_lstm = st.button("Run LSTM")
+        if run_lstm:
+            lstm()
+    with ml_tab2:
+        st.subheader("Facebook Prophet Model")
+        run_fb_prophet = st.button("Run FB Prophet Model")
+        if run_fb_prophet:
+            fb_prophet()
+    with ml_tab3:
+        st.subheader("ARIMA Model")
+        run_arima = st.button("Run Arima")
+        if run_arima:
+            arima()
 def main():
     st.sidebar.title("Navigation")
     pages = ["Home", "PCA and KMeans", "Correlation Analysis", "EDA Visual Analysis", "Machine Learning Models for Prediction and Forecasting"]
