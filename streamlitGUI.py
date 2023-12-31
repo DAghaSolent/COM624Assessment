@@ -31,7 +31,7 @@ def ml_models_prediction_forecasting():
              "stock.")
     st.write("Click on the tabs below to see the visual representation of the prediction and forecasting off my selected"
              " stocks utilising the machine learning models FB Prophet, LSTM, ARIMA.")
-
+    st.write("**My Selected Stocks were [AMD, NVDA, BKNG, ORLY]**")
     ml_tab1, ml_tab2, ml_tab3 = st.tabs(["LSTM", "FB Prophet", "ARIMA"])
     with ml_tab1:
         st.subheader("LSTM Model")

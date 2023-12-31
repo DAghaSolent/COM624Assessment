@@ -313,18 +313,18 @@ def lstm():
         history = model.fit(X_train, y_train, epochs=50, batch_size=32, validation_split=0.1, verbose=1, shuffle=False)
 
         # Visualising the training and testing process validation during training the LSTM model that I have created above.
-        plt.figure(figsize=(10, 8))
+        fig_validation_loss = plt.figure(figsize=(10, 8))
         plt.plot(history.history['loss'], label='train')
         plt.plot(history.history['val_loss'], label='test')
         plt.title(f"Validation loss for Stock:{stock}")
         plt.legend()
-        plt.show()
+        st.pyplot(fig_validation_loss)
 
         y_prediction = model.predict(X_test)
 
         # Evaluation of the predicted results made by the LSTM model, the visualisation shows the historic data and then
         # presents the future prediction made by the LSTM model for each stock. Finally plot the predicted results
-        plt.figure(figsize=(10, 8))
+        fig_prediction = plt.figure(figsize=(10, 8))
         plt.plot(np.arange(0, len(y_train)), y_train, 'g', label="history")
         plt.plot(np.arange(len(y_train), len(y_train) + len(y_test)), y_test, marker='.', label="true")
         plt.plot(np.arange(len(y_train), len(y_train) + len(y_test)), y_prediction, 'r', label="prediction")
@@ -332,9 +332,9 @@ def lstm():
         plt.xlabel('Time Step')
         plt.title(f"Stock:{stock}")
         plt.legend()
-        plt.show()
+        st.pyplot(fig_prediction)
 
-        plt.figure(figsize=(10, 8))
+        fig_single_prediction = plt.figure(figsize=(10, 8))
         plt.plot(y_test, marker='.', label="true")
         plt.plot(y_prediction, 'r', label="prediction")
         plt.ylabel('Value')
@@ -342,6 +342,7 @@ def lstm():
         plt.title(f"Stock:{stock}")
         plt.legend()
         plt.show()
+        st.pyplot(fig_single_prediction)
 
 # ARIMA Model Prediction
 def arima():
@@ -383,21 +384,24 @@ def arima():
         plt.plot(test_data.index, predictions, color='blue', label='Predicted Stock Price')
         plt.title(f'Stock Price Prediction for : {stock}')
         plt.legend()
-        plt.show()
+        st.pyplot()
 
-        # Reporting Performance for the ARIMA model
-        mse = mean_squared_error(test_data, predictions)
-        print('MSE: ' + str(mse))
-        mae = mean_absolute_error(test_data, predictions)
-        print('MAE: ' + str(mae))
-        rmse = math.sqrt(mean_squared_error(test_data, predictions))
-        print('RMSE: ' + str(rmse))
+        with st.expander(f"**Click here to view the performance of the ARIMA Model prediction on Stock: {stock}**"):
+            # Reporting Performance for the ARIMA model
+            mse = mean_squared_error(test_data, predictions)
+            st.write('MSE: ' + str(mse))
+            mae = mean_absolute_error(test_data, predictions)
+            st.write('MAE: ' + str(mae))
+            rmse = math.sqrt(mean_squared_error(test_data, predictions))
+            st.write('RMSE: ' + str(rmse))
 
         # Utilising my current Arima model to predict stock prices for the next 7 days
         future_arima_model = ARIMA(stock_prices, order=(1, 1, 0))
         fitted_future_arima_model = future_arima_model.fit()
         next7_forecasted_values = fitted_future_arima_model.forecast(steps=7)
 
+        st.write("Below attempting to utilise the ARIMA model to give a 7 day future forecasted prediction of Adj Close"
+                 f" Price for Stock: {stock}")
         # Plotting the forecasted predicted prices for each stock in the next 7 days
         plt.figure(figsize=(12, 8))
         plt.plot(stock_prices.index, stock_prices, label='Original Prices')
@@ -406,7 +410,7 @@ def arima():
         plt.title(f"7 Day forecasted prediction for: {stock}")
         plt.legend()
         plt.tight_layout()
-        plt.show()
+        st.pyplot()
 
 def user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock, future_days=365):
     # This function has been created to allow the user to select a stock within the tickers list to be able to get an
