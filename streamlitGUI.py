@@ -48,9 +48,15 @@ def ml_models_prediction_forecasting():
         run_arima = st.button("Run Arima")
         if run_arima:
             arima()
+
+def general_trading_analysis():
+    st.title("Task 6: General Trading Signals and Analysis")
+    user_selected_stock_forecast_analysis()
+
 def main():
     st.sidebar.title("Navigation")
-    pages = ["Home", "PCA and KMeans", "Correlation Analysis", "EDA Visual Analysis", "Machine Learning Models for Prediction and Forecasting"]
+    pages = ["Home", "PCA and KMeans", "Correlation Analysis", "EDA Visual Analysis",
+             "Machine Learning Models for Prediction and Forecasting", "General Trading Signals and Analysis"]
     choice = st.sidebar.selectbox("Go to", pages)
 
     if choice == "Home":
@@ -63,6 +69,8 @@ def main():
         eda_visual_analysis()
     elif choice == "Machine Learning Models for Prediction and Forecasting":
         ml_models_prediction_forecasting()
+    elif choice == "General Trading Signals and Analysis":
+        general_trading_analysis()
 
 if __name__ == "__main__":
     main()

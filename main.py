@@ -447,53 +447,59 @@ def user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock, fu
     # Plot the predictions that were made by Facebook Prophet Market prediction
     fig = plot_plotly(prophet, forecast)
     fig.update_layout(xaxis_title="Dates", yaxis_title="Stock Prices", title_text=f"Facebook Prophet Prediction for {user_selected_stock.columns[0]}")
-    fig.show()
+    st.subheader(f"Selected Stock: {user_selected_stock.columns[0]} Facebook Prophet Prediction Chart")
+    st.plotly_chart(fig)
 
     # Accessing the last/latest 'Adj Close' price for the user-selected stock
+    st.subheader(f"Selected Stock: {user_selected_stock.columns[0]} Latest Stock Information")
     last_stock_date_price = user_selected_stock.iloc[-1]
     last_stock_date = user_selected_stock.index[-1]
-    print(f"Latest Stock Information for: {user_selected_stock.columns[0]}\nLatest Updated Stock Date: {last_stock_date}\n"
-          f"Latest Stock Price: {last_stock_date_price.iloc[0]}\n")
+    st.write(f"**Latest Updated Stock Date: {last_stock_date}**")
+    st.write(f"**Latest Stock Price: {last_stock_date_price.iloc[0]}**")
+    print(f"Latest Stock Price: {last_stock_date_price.iloc[0]}")
 
     # Print the forecasted prices for the users selected stock depending on the future days that have been entered by
     # the user with the user_selected_stock_forecast_analysis function.
     forecast.rename(columns={'ds': 'Date', 'yhat': 'Adj Close Price'}, inplace=True)
-    print(f"Forecasting Prices for Stock({user_selected_stock.columns[0]}) for the Next {future_days} Days:")
-    print(forecast[['Date', 'Adj Close Price']].tail(future_days))
+    st.subheader(f"Forecasted Prices for Stock({user_selected_stock.columns[0]}) for the Next {future_days} Days:")
+    st.write(forecast[['Date', 'Adj Close Price']].tail(future_days))
 
     # I am retrieving data for the different time variance depending on the future days variable which will be 7, 14, 30
     # days. I access the data within the forecast dataframe and then offset the data depending on the time variance from
     # the future_days variable, I then save this as a variable to be used for comparison for stock analysis.
     future_days_stock_price = forecast.loc[forecast['Date'] == (last_stock_date + pd.DateOffset(days=future_days)), 'Adj Close Price'].iloc[0]
 
+    # Display stock analysis to the user regarding if they should invest/buy into the stock or sell/not invest into the
+    # stock depending on their time analysis.
+    st.subheader("User Selected Stock Analysis")
     if last_stock_date_price.iloc[0] > future_days_stock_price:
-        print("\nI'd advise that you sell this stock or don't invest in this stock at all.\nLatest stock price for "
-              f"({user_selected_stock.columns[0]}) is: {last_stock_date_price.iloc[0]}.\nWhich is higher than the "
-              f"predicted stock price valued at: {future_days_stock_price} in {future_days} days time.")
+        st.write("**I'd advise that you sell this stock or don't invest in this stock at all.**")
+        st.write(f"**Latest stock price for ({user_selected_stock.columns[0]}) is: {last_stock_date_price.iloc[0]}.**")
+        st.write(f"**Which is higher than the predicted stock price valued at: {future_days_stock_price} in {future_days} "
+                 "days time.**")
     elif last_stock_date_price.iloc[0] < future_days_stock_price:
-        print(f"\nI'd advise you to invest in this stock.\nLatest stock price for ({user_selected_stock.columns[0]}) "
-              f"is: {last_stock_date_price.iloc[0]}.\nWhich is lower than the predicted stock price valued at: {future_days_stock_price}"
-              f" in {future_days} days time.")
+        st.write("**I'd advise you to invest in this stock.**")
+        st.write(f"**Latest stock price for ({user_selected_stock.columns[0]}) is: {last_stock_date_price.iloc[0]}.**")
+        st.write(f"**Which is lower than the predicted stock price valued at: {future_days_stock_price} in {future_days}**"
+                 f" **days time**")
 
 def user_selected_stock_forecast_analysis():
-    stock_user_selection = input("Please enter the stock you would like to analyse: ").upper()
+    stock_user_selection = st.text_input("Enter the stock into the text field that you would like to analyse (e.g AAPL)"
+                                         " 👇").upper()
     user_selected_stock_DF = pd.DataFrame()
-    if stock_user_selection in tickers:
-        user_selected_stock_data = yf.download(stock_user_selection, start=start_date, end=end_date)
-        user_selected_stock_DF[stock_user_selection] = user_selected_stock_data['Adj Close']
-
-        user_input = int(input("Stock Found\nEnter [1] for 7 day analysis\nEnter [2] for 14 day analysis\n"
-                               "Enter [3] for 30 day analysis\nPlease Enter your Selection now: "))
-        if user_input == 1:
-            print(f"Analysing and forecasting stock prices for {stock_user_selection} for the next 7 days")
-            user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=7)
-        elif user_input == 2:
-            print(f"Analysing and forecasting stock prices for {stock_user_selection} for the next 14 days")
-            user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=14)
-        elif user_input == 3:
-            print(f"Analysing and forecasting stock prices for {stock_user_selection} for the next 30 days")
-            user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=30)
+    user_selected_stock_data = yf.download(stock_user_selection, start=start_date, end=end_date)
+    user_selected_stock_DF[stock_user_selection] = user_selected_stock_data['Adj Close']
+    user_input = st.selectbox("Select the analysis duration:", [7, 14, 30])
+    if st.button("Analyse Stock"):
+        if stock_user_selection in tickers:
+            if user_input == 7:
+                st.write(f"Analysing and forecasting stock prices for {stock_user_selection} for the next 7 days")
+                user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=7)
+            elif user_input == 14:
+                st.write(f"Analysing and forecasting stock prices for {stock_user_selection} for the next 14 days")
+                user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=14)
+            elif user_input == 30:
+                st.write(f"Analysing and forecasting stock prices for {stock_user_selection} for the next 30 days")
+                user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=30)
         else:
-            print("Invalid Input")
-    else:
-        print("Unable to find Stock information for that inputted Stock Code")
+            st.write("Unable to find Stock information for that inputted Stock Code")
