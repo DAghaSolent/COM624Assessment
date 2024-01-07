@@ -19,6 +19,10 @@ from sklearn.metrics import mean_squared_error
 import math
 import warnings
 import streamlit as st
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from matplotlib.dates import date2num
+import matplotlib.dates as mdates
 
 warnings.filterwarnings("ignore")
 st.set_option('deprecation.showPyplotGlobalUse', False)
@@ -503,3 +507,30 @@ def user_selected_stock_forecast_analysis():
                 user_selected_stock_forecast_analysis_with_fbProphet(user_selected_stock_DF, future_days=30)
         else:
             st.write("Unable to find Stock information for that inputted Stock Code")
+
+def linear_regression():
+    for stock in selected_stocks:
+        # Accessing the Adj Close prices for each of my selected stocks
+        stock_price = selected_stocks[stock]
+
+        # Split data into train and test set: 80% / 20%
+        train, test = train_test_split(stock_price.to_frame(), test_size=0.20)
+
+        # Reshape x and y train data for linear regression
+        X_train = date2num(train.index).astype(float).reshape(-1, 1)
+        y_train = train[stock]
+
+        # Create Linear Regression Model and then fit the data to the model
+        model = LinearRegression()
+        model.fit(X_train, y_train)
+
+        # Visualize the Linear Regression predictions against the actual price data
+        plt.figure(figsize=(10, 6))
+        plt.title(f"Linear Regression Prediction for Stock: {stock}")
+        plt.scatter(X_train, y_train, edgecolors='w', label='Actual Price')
+        plt.plot(X_train, model.predict(X_train), color='r', label='Predicted Price')
+        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+        plt.xlabel('Date')
+        plt.ylabel('Stock Adj Close Price')
+        plt.legend()
+        plt.show()
