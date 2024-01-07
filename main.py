@@ -525,7 +525,7 @@ def linear_regression():
         model.fit(X_train, y_train)
 
         # Visualize the Linear Regression predictions against the actual price data
-        plt.figure(figsize=(10, 6))
+        linear_regression_fig = plt.figure(figsize=(10, 6))
         plt.title(f"Linear Regression Prediction for Stock: {stock}")
         plt.scatter(X_train, y_train, edgecolors='w', label='Actual Price')
         plt.plot(X_train, model.predict(X_train), color='r', label='Predicted Price')
@@ -533,4 +533,4 @@ def linear_regression():
         plt.xlabel('Date')
         plt.ylabel('Stock Adj Close Price')
         plt.legend()
-        plt.show()
+        st.pyplot(linear_regression_fig)
