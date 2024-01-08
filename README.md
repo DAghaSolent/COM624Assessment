@@ -30,7 +30,7 @@ streamlit run streamlitGUI.py
 
 Once that command is inputted automatically your prefered broswer will open and you will then be greeted with the home page off my application.
 
-![](Images/Streamlit%20Application%20running.png)
+![Streamlit Application running](https://github.com/DAghaSolent/COM624Assessment/assets/91552769/e41e3215-a897-4a09-a386-e67b16d890bf)
 
 <hr>
 
@@ -38,8 +38,9 @@ This application is split up into two files the ```main.py``` file which houses 
 <hr>
 <h2>Screenshots</h2>
 
-![](Images/EDA%20Screenshot.png)
+![EDA Screenshot](https://github.com/DAghaSolent/COM624Assessment/assets/91552769/e4480c2f-fd99-4377-8ec5-b8973e7343fa)
 
-![](Images/FB%20Prophet.png)
+![FB Prophet](https://github.com/DAghaSolent/COM624Assessment/assets/91552769/6039e490-a4f1-49cb-9acd-c676e62a2911)
 
-![](Images/GeneralTask6Screenshot.png)
+![GeneralTask6Screenshot](https://github.com/DAghaSolent/COM624Assessment/assets/91552769/bb2d6f78-60d6-4d1e-a4a2-cfc9ad9b65a7)
+
