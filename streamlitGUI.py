@@ -32,27 +32,27 @@ def ml_models_prediction_forecasting():
     st.write("Click on the tabs below to see the visual representation of the prediction and forecasting off my selected"
              " stocks utilising the machine learning models FB Prophet, LSTM, ARIMA.")
     st.write("**My Selected Stocks were [AMD, NVDA, BKNG, ORLY]**")
-    ml_tab1, ml_tab2, ml_tab3, ml_tab4 = st.tabs(["LSTM", "FB Prophet", "ARIMA", "Linear Regression"])
+    ml_tab1, ml_tab2, ml_tab3, ml_tab4 = st.tabs(["ARIMA", "LSTM", "Linear Regression", "FB Prophet" ])
     with ml_tab1:
-        st.subheader("LSTM Model")
-        run_lstm = st.button("Run LSTM")
-        if run_lstm:
-            lstm()
-    with ml_tab2:
-        st.subheader("Facebook Prophet Model")
-        run_fb_prophet = st.button("Run FB Prophet Model")
-        if run_fb_prophet:
-            fb_prophet()
-    with ml_tab3:
         st.subheader("ARIMA Model")
         run_arima = st.button("Run Arima")
         if run_arima:
             arima()
-    with ml_tab4:
+    with ml_tab2:
+        st.subheader("LSTM Model")
+        run_lstm = st.button("Run LSTM")
+        if run_lstm:
+            lstm()
+    with ml_tab3:
         st.subheader("Linear Regression")
         run_linear_regression = st.button("Run Linear Regression")
         if run_linear_regression:
             linear_regression()
+    with ml_tab4:
+        st.subheader("Facebook Prophet Model")
+        run_fb_prophet = st.button("Run FB Prophet Model")
+        if run_fb_prophet:
+            fb_prophet()
 
 def general_trading_analysis():
     st.title("Task 6: General Trading Signals and Analysis")
