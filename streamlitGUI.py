@@ -1,7 +1,41 @@
 from main import *
 
 def home():
-    st.title("Stock Price Analysis Tool - Home Page")
+    st.title("COM624 AE1 - Danial Agha Financial Stock Analysis Software Artifact Solution")
+    st.write("This is my Software Artifact Solution which has been built to complete the tasks proposed within the "
+             "assessment brief for this assessment module. To keep the data consistent for my solution and due to stock"
+             " de-listing errors as well I decided to stop the data retrieval on the 26th of December 2024. ")
+    st.write("Bear in mind though I am still retrieving a 1 year worth of stock data (26/12/22- 26/12-23) that I am "
+             "analysing with my Software Artifact Solution. Even though I am not providing real up to date data, this "
+             "is a great opportunity to showcase my solution in analysing data with real world data. ")
+    st.markdown("My Software Artefact Solution is also hosted on a GitHub repository that can be accessed with this "
+                "link: [COM624-AE1 GitHub Repository Software Artifact Solution](https://github.com/DAghaSolent/COM624Assessment)")
+    st.markdown("To view a demonstration off my Software Artifact in action click on the following YouTube link: "
+                "[YouTube Video Demonstration of Software Solution Artifact](https://youtube.com)")
+    st.subheader("My Selected Stocks are below")
+
+    col1, col2 = st.columns([0.2, 0.8])
+    col1.image("https://1000logos.net/wp-content/uploads/2020/05/Amd-logo.jpg", width=100)
+    col2.subheader("AMD - Advanced Micro Devices Inc")
+
+    col3, col4 = st.columns([0.2, 0.8])
+    col3.image(
+        "https://www.nvidia.com/content/dam/en-zz/Solutions/about-nvidia/logo-and-brand/01-nvidia-logo-horiz-500x200-2c50-l.png",
+        width=120)
+    col4.subheader("NVDA - NVIDIA Corp")
+
+    col5, col6 = st.columns([0.2, 0.8])
+    col5.markdown(
+        f'<img src="https://upload.wikimedia.org/wikipedia/commons/3/3d/Booking_Holdings_Inc._Logo.svg" width="120" height="80">',
+        unsafe_allow_html=True)
+    col6.subheader("BKNG - Booking Holdings Inc")
+
+    col7, col8 = st.columns([0.2, 0.8])
+    col7.image("https://www.logo.wine/a/logo/O'Reilly_Auto_Parts/O'Reilly_Auto_Parts-Logo.wine.svg")
+    col8.subheader("ORLY - O'Reilly Automotive Inc")
+
+    st.write("To view my Software Solution Artifact handle the tasks that were outlined in the Assessment Brief click "
+             "on the navigation dropdown on the left side of the screen and chose the solution implementation. ")
 
 def pca_and_kmeans_page():
     st.title("Task 2: PCA and KMeans Clustering")
