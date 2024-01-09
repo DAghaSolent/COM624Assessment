@@ -4,7 +4,7 @@ def home():
     st.title("COM624 AE1 - Danial Agha Financial Stock Analysis Software Artefact Solution")
     st.write("This is my Software Artefact Solution which has been built to complete the tasks proposed within the "
              "assessment brief for this assessment module. To keep the data consistent for my solution and due to stock"
-             " de-listing errors as well I decided to stop the data retrieval on the 26th of December 2024. ")
+             " de-listing errors as well I decided to stop the data retrieval on the 26th of December 2023. ")
     st.write("Bear in mind though I am still retrieving a 1 year worth of stock data (26/12/22- 26/12-23) that I am "
              "analysing with my Software Artefact Solution. Even though I am not providing real up to date data, this "
              "is a great opportunity to showcase my solution in analysing data with real world data. ")
