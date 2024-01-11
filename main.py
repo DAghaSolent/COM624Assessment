@@ -325,7 +325,7 @@ def lstm():
         plt.plot(np.arange(len(y_train), len(y_train) + len(y_test)), y_prediction, 'r', label="prediction")
         plt.ylabel('Value')
         plt.xlabel('Time Step')
-        plt.title(f"Stock:{stock}")
+        plt.title(f"Plotting predictions with real historical data for Stock:{stock}")
         plt.legend()
         st.pyplot(fig_prediction)
 
@@ -334,7 +334,7 @@ def lstm():
         plt.plot(y_prediction, 'r', label="prediction")
         plt.ylabel('Value')
         plt.xlabel('Time Step')
-        plt.title(f"Stock:{stock}")
+        plt.title(f"Prediction vs Training data for Stock:{stock}")
         plt.legend()
         plt.show()
         st.pyplot(fig_single_prediction)
