@@ -103,10 +103,6 @@ def pca_reduction_and_kmeans_clustering(): # Task 2 PCA reduction and Clustering
              " reduced dataframe")
     st.write(pca_reduced_data_dataFrame.head())
 
-    # Exporting to a CSV for better visualisation off the reduced columns done by the PCA reduction operation
-    csvfilepath = r'C:\Users\Danny\Documents\Uni Solent Work\Year 3\COM624 Machine Learning\COM624 Assessment\pca_reduced_data.csv'
-    pca_reduced_data_dataFrame.to_csv(csvfilepath, index=False)
-
     # Data preprocessing to only use the 10 PCA reduced columns and ignore the ticker names
     pca_reduced_data_numeric_values = pca_reduced_data_dataFrame.iloc[:, 0:10]
 
@@ -116,11 +112,6 @@ def pca_reduction_and_kmeans_clustering(): # Task 2 PCA reduction and Clustering
 
     # Creating a new dataframe to visualise which stock tickers represent in which cluster group number.
     kmeans_clustering_results_df = pd.DataFrame({'Ticker': tickers, 'Assigned Cluster': cluster_labels})
-
-    # Exporting the tickers and their Assigned Cluster label to better visualise the clusters and which ticker is assigned
-    # to which cluster.
-    cluster_csvfilepath = r'C:\Users\Danny\Documents\Uni Solent Work\Year 3\COM624 Machine Learning\COM624 Assessment\kmeans_clustering_results.csv'
-    kmeans_clustering_results_df.to_csv(cluster_csvfilepath, index=False)
 
     # Cluster Lists for better visualisation in terminal and front end GUI solution.
     cluster0 = []
