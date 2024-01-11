@@ -2,7 +2,7 @@
 
 This repository stores my software solution that has been built to complete Financial Stock Analysis tasks that was proposed with the specific requirements outlined in the COM624 assessment brief.
 
-**<p>Demonstration off my Software Artefact Solution: https://Youtube.com</p>**
+**<p>Demonstration off my Software Artefact Solution: https://www.youtube.com/watch?v=17pJkSaNEOY&ab_channel=DanialAgha</p>**
 
 <h2>Running the application locally instructions</h2><hr>
 
